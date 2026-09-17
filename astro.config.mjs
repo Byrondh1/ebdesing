@@ -7,17 +7,16 @@ import tailwindcss from '@tailwindcss/vite';
 import registrarSalida from './integraciones/registrar-salida.mjs';
 
 /**
- * ⚠ DOMINIO PROVISIONAL — EBDesing todavía no lo ha decidido (confirmado 2026-09-17).
+ * Dominio de producción, confirmado por Byron el 2026-09-17.
  *
- * No está confirmado que vaya a ser este. De aquí salen los canonical, el sitemap,
- * el robots.txt y las URLs absolutas del JSON-LD, así que hay que fijarlo ANTES del
- * primer deploy: publicar con el dominio equivocado deja canonical apuntando a un
- * sitio que no es el nuestro.
+ * De aquí salen los canonical, el sitemap, el robots.txt, el llms.txt y las URLs
+ * absolutas del JSON-LD. Es el único sitio donde se escribe: si cambia, cambia aquí
+ * y todo lo demás lo sigue.
  *
- * Ningún artefacto generado lo da por bueno: las imágenes OG no lo imprimen y el
- * robots.txt lo deriva de aquí. `npm run marcadores` lo reporta como bloqueante.
+ * Las imágenes OG no lo imprimen a propósito, así que cambiarlo no obliga a
+ * regenerarlas.
  */
-const DOMINIO_PROVISIONAL = 'https://ebdesing.com';
+const DOMINIO = 'https://ebdesing.ebcorp.dev';
 
 // Rutas que no deben indexarse ni aparecer en el sitemap.
 const EXCLUIDAS = ['/components-preview', '/404'];
@@ -55,7 +54,7 @@ const inyectadas = Object.fromEntries(
 
 // https://astro.build/config
 export default defineConfig({
-  site: DOMINIO_PROVISIONAL,
+  site: DOMINIO,
 
   // El sitio entero se prerenderiza. La única ruta que se ejecuta en el servidor es
   // /api/cotizacion, que se marca con `export const prerender = false`. El adaptador
@@ -68,7 +67,7 @@ export default defineConfig({
     registrarSalida(),
     sitemap({
       filter: (pagina) =>
-        !EXCLUIDAS.some((ruta) => pagina === `${DOMINIO_PROVISIONAL}${ruta}/` || pagina === `${DOMINIO_PROVISIONAL}${ruta}`),
+        !EXCLUIDAS.some((ruta) => pagina === `${DOMINIO}${ruta}/` || pagina === `${DOMINIO}${ruta}`),
       changefreq: 'monthly',
       lastmod: new Date(),
     }),

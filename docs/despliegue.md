@@ -85,6 +85,22 @@ npx wrangler secret put RESEND_API_KEY  --config dist/server/wrangler.json
 npx wrangler secret put CONTACT_EMAIL   --config dist/server/wrangler.json
 ```
 
+### Remitente del correo
+
+Sin configurar, el formulario envía desde `onboarding@resend.dev`, que **solo entrega al correo de
+la cuenta de Resend**. Para que salga desde el dominio propio:
+
+1. Resend → Domains → Add Domain → `ebdesing.ebcorp.dev`, y añade los registros DNS que pida.
+2. Cuando aparezca como verificado:
+
+```bash
+npx wrangler secret put REMITENTE_COTIZACION --config dist/server/wrangler.json
+# valor, por ejemplo:  EBDesing <cotizaciones@ebdesing.ebcorp.dev>
+```
+
+Hasta que el dominio esté verificado, **no** pongas ese secreto: Resend rechazaría el envío y el
+formulario respondería 502.
+
 ⚠ **Ponlos como secretos, no como variables de texto plano en el panel.** El `wrangler.json` que
 genera el adaptador declara `"vars": {}`, y ese archivo es la fuente de verdad de las `vars` en cada
 despliegue. Los secretos se gestionan aparte y no aparecen en la configuración, así que un

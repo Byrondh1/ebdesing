@@ -4,9 +4,22 @@ import type { Cotizacion } from './cotizacion';
 export interface ConfiguracionEmail {
   resendApiKey?: string;
   contactEmail?: string;
+  /** Remitente. Debe ser un dominio verificado en Resend. */
+  remitente?: string;
   /** Solo desarrollo: registra el correo en consola en vez de enviarlo. */
   simulado?: boolean;
 }
+
+/**
+ * Remitente de respaldo mientras no haya dominio verificado en Resend.
+ *
+ * `onboarding@resend.dev` solo entrega al correo de la cuenta de Resend: sirve para
+ * probar, no para producción. Para usar el dominio propio hay que verificarlo en
+ * Resend (Domains → Add Domain → registros DNS) y luego definir REMITENTE_COTIZACION,
+ * por ejemplo `EBDesing <cotizaciones@ebdesing.ebcorp.dev>`. Es variable de runtime
+ * del worker, así que va en .dev.vars o en `wrangler secret put`.
+ */
+export const REMITENTE_DE_PRUEBA = 'EBDesing <onboarding@resend.dev>';
 
 export class ErrorEnvio extends Error {}
 
@@ -56,11 +69,8 @@ export async function enviarCotizacion(
 
   const resend = new Resend(config.resendApiKey);
 
-  // TODO(Byron): `from` debe ser un dominio verificado en Resend. Mientras no haya
-  // dominio propio confirmado, onboarding@resend.dev solo entrega al correo de la
-  // cuenta de Resend — sirve para probar, no para producción.
   const { error } = await resend.emails.send({
-    from: 'EBDesing <onboarding@resend.dev>',
+    from: config.remitente || REMITENTE_DE_PRUEBA,
     to: [config.contactEmail],
     replyTo: datos.email,
     subject: asunto,

@@ -9,6 +9,11 @@
 RESEND_API_KEY=
 CONTACT_EMAIL=
 
+# Remitente. Si se deja vacío usa onboarding@resend.dev, que SOLO entrega al correo
+# de la cuenta de Resend — sirve para probar, no para producción. Para usar el
+# dominio propio hay que verificarlo antes en Resend (Domains → Add Domain).
+# REMITENTE_COTIZACION=EBDesing <cotizaciones@ebdesing.ebcorp.dev>
+
 # Opcional, solo desarrollo: registra la cotización en consola en vez de enviarla,
 # para probar el formulario sin cuenta de Resend. El endpoint se niega a usarlo si
 # detecta CF_PAGES.

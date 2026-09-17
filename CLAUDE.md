@@ -78,6 +78,10 @@ commits y copy del sitio en español.
 ## Estado actual
 Pasos 1-13 del BUILD ORDER completos. Falta el **14** (deploy). Ver `docs/despliegue.md`.
 
+**Dominio de producción: `https://ebdesing.ebcorp.dev`** (confirmado 2026-09-17). Se escribe en un
+solo sitio, `DOMINIO` en `astro.config.mjs`; canonical, sitemap, robots.txt, llms.txt y JSON-LD
+salen de ahí. Las imágenes OG no lo imprimen, así que cambiarlo no obliga a regenerarlas.
+
 ### Cómo fluye el contenido
 ```
 Sanity ──> src/lib/sanity.ts ──┐
@@ -263,6 +267,9 @@ Todo en **`docs/despliegue.md`**. Lo esencial:
 - `RESEND_API_KEY` y `CONTACT_EMAIL` van como **secretos del worker** (`wrangler secret put`), no
   como `vars`: el `wrangler.json` generado declara `"vars": {}` y es la fuente de verdad en cada
   despliegue.
+- El remitente del correo sale de `REMITENTE_COTIZACION`. Si no está, cae a
+  `onboarding@resend.dev`, que **solo entrega al correo de la cuenta de Resend**: sirve para
+  probar, no para producción. Para usar el dominio propio hay que verificarlo antes en Resend.
 
 ### Medido, no supuesto
 Última verificación en navegador con throttling móvil: CLS entre 0.0007 y 0.009 en Home, Servicios,

@@ -23,12 +23,13 @@ const recordatorios = [];
 const config = await leer('astro.config.mjs');
 
 // --- dominio ---
-const sitio = config.match(/const DOMINIO_PROVISIONAL = '([^']+)'/)?.[1];
-if (sitio === 'https://ebdesing.com')
+const sitio = config.match(/const DOMINIO = '([^']+)'/)?.[1];
+// Se sigue comprobando: si alguien lo devuelve al marcador, vuelve a ser bloqueante.
+if (!sitio || sitio === 'https://ebdesing.com')
   bloqueantes.push([
     'Dominio sin confirmar',
-    `provisional ${sitio} — de él dependen canonical, sitemap, robots.txt y JSON-LD`,
-    'astro.config.mjs · EBDesing aún no lo ha decidido',
+    `${sitio ?? 'ilegible'} — de él dependen canonical, sitemap, robots.txt, llms.txt y JSON-LD`,
+    'astro.config.mjs',
   ]);
 
 // --- página de desarrollo ---
