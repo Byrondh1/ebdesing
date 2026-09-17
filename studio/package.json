@@ -1,0 +1,19 @@
+{
+  "name": "ebdesing-studio",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "sanity dev",
+    "start": "sanity dev",
+    "build": "sanity build",
+    "deploy": "sanity deploy"
+  },
+  "dependencies": {
+    "sanity": "6.15.0",
+    "@sanity/vision": "6.15.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "styled-components": "6.5.3"
+  }
+}

@@ -2,7 +2,9 @@
 import Base from '../layouts/Base.astro';
 import Servicios from '../components/sections/Servicios.astro';
 import CTA from '../components/sections/CTA.astro';
-import { serviciosOrdenados } from '../lib/contenido-temporal';
+import { obtenerServicios } from '../lib/contenido';
+
+const servicios = await obtenerServicios();
 import { listaDeServicios, migas } from '../lib/seo';
 ---
 
@@ -11,7 +13,7 @@ import { listaDeServicios, migas } from '../lib/seo';
   descripcion="Identidad de marca, diseño publicitario, gran formato e impresión, y contenido para redes. Lo que hace EBDesing y cómo lo entrega."
   ogImagen="/og/servicios.png"
   jsonLd={[
-    listaDeServicios(serviciosOrdenados, Astro.site),
+    listaDeServicios(servicios, Astro.site),
     migas([{ nombre: 'Servicios', href: '/servicios' }], Astro.site),
   ]}
 >
@@ -24,7 +26,7 @@ import { listaDeServicios, migas } from '../lib/seo';
     </div>
   </section>
 
-  <Servicios servicios={serviciosOrdenados} mostrarCompleto={true} />
+  <Servicios servicios={servicios} mostrarCompleto={true} />
 
   <CTA
     titulo="¿No ves lo que buscas?"

@@ -54,49 +54,73 @@ commits y copy del sitio en español.
   las sesiones de Claude Code en web bloquea `github.com`/`codeload.github.com`, y ese comando
   descarga la plantilla desde ahí. El resultado es equivalente a la plantilla `minimal`.
 - **Aún sin instalar** (llegan en su paso del BUILD ORDER): `@astrojs/cloudflare` y `resend`
-  (paso 8), `@sanity/client` (paso 6), `wrangler` (paso 14).
+  (paso 8), `wrangler` (paso 14).
+- **@sanity/image-url no se usa:** la CDN de Sanity acepta transformaciones por query string,
+  así que `src/lib/imagenes.ts` las arma a mano y nos ahorramos la dependencia.
 
 ## Estado actual
-Pasos 1-5 y 9 del BUILD ORDER completos. `npm run build` en 0, 7 páginas.
+Pasos 1-7 y 9 del BUILD ORDER completos. Faltan el 8 (formulario) y el 10-14.
 
-- **Layout:** `Base.astro` recibe `titulo`/`descripcion`/`ogImagen`/`noindex`/`jsonLd` y arma head,
-  OG, Twitter, canonical, JSON-LD y skip-link. `Header` y `Footer` leen la nav de `src/lib/nav.ts`.
-- **Sistema de diseño:** `Button` (primario/secundario/contorno × sm/md/lg), `Badge`, `Card`.
-- **Páginas:** Home, Servicios, Sobre nosotros, 404 propio, y maquetas de Portafolio y Contacto.
-- **SEO (paso 9):** sitemap con `/components-preview` y `/404` excluidas, `robots.txt`, JSON-LD
-  (`Organization`, `WebSite`, `ItemList` de `Service`, `BreadcrumbList`) e imagen OG propia por página.
+### Cómo fluye el contenido
+```
+Sanity ──> src/lib/sanity.ts ──┐
+                               ├──> src/lib/contenido.ts ──> páginas ──> componentes
+contenido-temporal.ts ─────────┘         (decide cuál)                    (solo tipos)
+```
+- **Las páginas SOLO importan de `contenido.ts`.** Nunca de `sanity.ts` ni de
+  `contenido-temporal.ts`. Los componentes de sección solo importan tipos de `tipos.ts`.
+- `contenido.ts` memoiza: sin eso se repetiría la misma consulta una vez por página.
+- `imagenes.ts` está separado de `sanity.ts` porque este último lanza si falta configuración,
+  y `recortar()` debe funcionar también con contenido local.
+
+### Construir sin Sanity
+```bash
+USAR_CONTENIDO_LOCAL=1 npm run build   # contenido de ejemplo, NO sirve para publicar
+```
+Es opt-in a propósito: por defecto el build **falla** si no puede hablar con Sanity — mejor un
+deploy roto que uno que publica en silencio un portafolio vacío. Además se niega a arrancar si
+detecta `CF_PAGES`, para que la variable no se cuele en el panel de Cloudflare.
+
+### Studio
+`studio/` es un proyecto npm aparte, con su propio `npm install` y su propio `.env`
+(`SANITY_STUDIO_PROJECT_ID`). `configuracionSitio` es un singleton: sin plantilla de creación
+y sin acciones de borrar ni duplicar. Ver `studio/README.md`.
+
+`npm audit` en `studio/` reporta 14 vulnerabilidades (2 altas: `js-yaml`, `smol-toml`), todas
+transitivas de las herramientas de build del Studio. **No las arregles con `audit fix --force`**:
+degrada `sanity` a la v5, que rompe esta config. No afectan al sitio publicado — el proyecto raíz
+tiene 0 vulnerabilidades.
 
 ## Comandos propios
 ```bash
-npm run build          # incluye postbuild: auditoría SEO que ROMPE el build si algo falla
+npm run build          # postbuild: auditoría SEO que ROMPE el build si algo falla
 npm run auditar-seo    # la auditoría suelta, sobre dist/
-npm run marcadores     # lista lo que falta reemplazar antes del deploy (sale 1 si queda algo)
+npm run marcadores     # bloqueantes y recordatorios antes del deploy
 npm run generar-og     # regenera public/og/*.png (necesita: npx playwright install chromium)
 ```
 
 ### Reglas de datos estructurados
-Un dato estructurado falso es peor que uno ausente. `seo.ts` **omite** el teléfono mientras sea
-`TELEFONO_MARCADOR` y omite de `sameAs` las URLs de redes que apuntan a la portada de la plataforma
-en vez de a un perfil. Al poner los datos reales aparecen solos; no hay que tocar `seo.ts`.
+Un dato estructurado falso es peor que uno ausente. `seo.ts` omite el teléfono mientras sea
+`TELEFONO_MARCADOR` y descarta de `sameAs` las URLs que apuntan a la portada de la plataforma
+en vez de a un perfil. Al poner los datos reales en Sanity aparecen solos.
 
 ### Imágenes OG
-Los PNG de `public/og/` se **commitean**: son artefactos, no se generan en cada build, para que el
-deploy no dependa de un navegador headless ni de las fuentes de la máquina que construye. Si cambian
-los títulos de `scripts/og.config.mjs`, los colores de marca **o el dominio**, hay que regenerarlos.
-
-### Temporal, se borra o se reemplaza
-Corre `npm run marcadores` para la lista viva. En resumen: dominio, WhatsApp, correo, dirección,
-redes, logo del JSON-LD, `/components-preview` y el módulo `contenido-temporal.ts`.
+Los PNG de `public/og/` se **commitean**: son artefactos, para que el deploy no dependa de un
+navegador headless ni de las fuentes de la máquina que construye. Las páginas de proyecto usan en
+cambio su `imagenPrincipal` de Sanity, que es una URL externa — por eso la auditoría solo comprueba
+en disco las imágenes del mismo origen.
 
 ### Ojo con las fuentes
-`public/fonts/` ya tiene Archivo Black e Inter (variable, un solo archivo cubre todos los pesos),
-pero **solo las usa el generador de OG**. El sitio aún cae a las fuentes del sistema: el `@font-face`
-con preload es el paso 11. Hasta entonces las tarjetas OG y el sitio no se ven con la misma tipografía.
+`public/fonts/` tiene Archivo Black e Inter (variable, un archivo cubre todos los pesos), pero
+**solo las usa el generador de OG**. El sitio aún cae a las fuentes del sistema: el `@font-face`
+con preload es el paso 11. Hasta entonces las tarjetas OG y el sitio no comparten tipografía.
 
 ### Trampas encontradas (no las repitas)
 - Astro **colapsa el salto de línea que precede a un `<span>`** y se come el espacio entre palabras.
 - Los comentarios `<!-- -->` en plantillas .astro **se envían al navegador**. Usa `{/* */}`.
 - Un hijo de contenedor flex se estira por `align-items: stretch`: `Badge` lleva `w-fit self-start`.
 - Inter en Google Fonts v20 es variable: los "distintos pesos" descargan el mismo archivo.
+- Un `export ... from './sanity'` carga ese módulo (y su `throw`) aunque no se use el símbolo:
+  por eso `recortar` vive en `imagenes.ts`.
 
-Siguiente: paso 6, integración con Sanity (requiere el project ID de Byron).
+Siguiente: paso 8, formulario de cotización con `@astrojs/cloudflare` y Resend.

@@ -1,0 +1,138 @@
+---
+import Base from '../../layouts/Base.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import CTA from '../../components/sections/CTA.astro';
+import { obtenerProyectos, obtenerConfiguracion, enlaceWhatsapp } from '../../lib/contenido';
+import { recortar } from '../../lib/imagenes';
+import { migas, obraCreativa } from '../../lib/seo';
+import type { Proyecto } from '../../lib/tipos';
+
+/**
+ * Una página por proyecto. El proyecto entero viaja en `props` para no volver a
+ * consultar Sanity una vez por ruta: `obtenerProyectos()` ya trajo todo.
+ */
+export async function getStaticPaths() {
+  const proyectos = await obtenerProyectos();
+  return proyectos.map((proyecto) => ({
+    params: { slug: proyecto.slug },
+    props: { proyecto },
+  }));
+}
+
+interface Props {
+  proyecto: Proyecto;
+}
+
+const { proyecto } = Astro.props;
+const { telefonoWhatsapp } = await obtenerConfiguracion();
+
+const portada = recortar(proyecto.imagenPrincipal, 1600, 900);
+const galeria = (proyecto.galeria ?? [])
+  .map((imagen) => ({ ...imagen, src: recortar(imagen, 1200) }))
+  .filter((imagen) => Boolean(imagen.src));
+
+// La meta description sale del contenido del editor, así que hay que recortarla:
+// pasada de largo, Google la trunca igual y la auditoría avisa.
+const descripcion = `${proyecto.titulo} — ${proyecto.categoria} para ${proyecto.cliente}. ${proyecto.descripcion}`
+  .replace(/\s+/g, ' ')
+  .slice(0, 160)
+  .trim();
+
+const mensajeWhatsapp = `Hola, vi el proyecto "${proyecto.titulo}" en su portafolio y quiero algo parecido.`;
+---
+
+<Base
+  titulo={proyecto.titulo}
+  descripcion={descripcion}
+  ogImagen={proyecto.imagenPrincipal?.url ?? '/og/portafolio.png'}
+  jsonLd={[
+    obraCreativa(proyecto, Astro.site),
+    migas(
+      [
+        { nombre: 'Portafolio', href: '/portafolio' },
+        { nombre: proyecto.titulo, href: `/portafolio/${proyecto.slug}/` },
+      ],
+      Astro.site
+    ),
+  ]}
+>
+  <article>
+    <section class="bg-brand-black py-16 text-brand-white sm:py-20">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <nav aria-label="Migas de pan" class="text-sm text-brand-white/60">
+          <a href="/portafolio" class="rounded hover:text-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold">
+            Portafolio
+          </a>
+          <span aria-hidden="true"> / </span>
+          <span class="text-brand-white">{proyecto.titulo}</span>
+        </nav>
+
+        <Badge variante="oro" class="mt-6">{proyecto.categoria}</Badge>
+        <h1 class="mt-4 max-w-3xl font-display text-4xl font-bold sm:text-5xl">{proyecto.titulo}</h1>
+        <p class="mt-4 text-lg text-brand-white/70">Cliente: {proyecto.cliente}</p>
+      </div>
+    </section>
+
+    {
+      portada && (
+        <img
+          src={portada}
+          alt={proyecto.imagenPrincipal?.alt || proyecto.titulo}
+          width="1600"
+          height="900"
+          fetchpriority="high"
+          decoding="async"
+          class="aspect-video w-full object-cover"
+        />
+      )
+    }
+
+    <section class="py-16 sm:py-20">
+      <div class="mx-auto grid max-w-6xl gap-12 px-4 sm:px-6 md:grid-cols-3">
+        <div class="md:col-span-2">
+          <h2 class="font-display text-2xl font-bold">El proyecto</h2>
+          <p class="mt-4 text-lg text-brand-gray">{proyecto.descripcion}</p>
+        </div>
+
+        <aside class="border-l-4 border-brand-gold pl-6">
+          <h2 class="font-display text-sm tracking-widest text-brand-gray uppercase">Resultado</h2>
+          <p class="mt-3 text-lg">{proyecto.resultado}</p>
+          <Button href={enlaceWhatsapp(telefonoWhatsapp, mensajeWhatsapp)} class="mt-6">
+            Quiero algo así
+          </Button>
+        </aside>
+      </div>
+    </section>
+
+    {
+      galeria.length > 0 && (
+        <section class="pb-16 sm:pb-20">
+          <div class="mx-auto max-w-6xl px-4 sm:px-6">
+            <h2 class="font-display text-2xl font-bold">Galería</h2>
+            <ul class="mt-8 grid gap-6 sm:grid-cols-2">
+              {galeria.map((imagen) => (
+                <li>
+                  <img
+                    src={imagen.src}
+                    alt={imagen.alt || proyecto.titulo}
+                    width={imagen.ancho ?? 1200}
+                    height={imagen.alto ?? 900}
+                    loading="lazy"
+                    decoding="async"
+                    class="w-full rounded-lg object-cover"
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )
+    }
+  </article>
+
+  <CTA
+    titulo="¿Quieres algo parecido?"
+    texto="Cuéntanos tu proyecto y te mandamos una cotización."
+  />
+</Base>

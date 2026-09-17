@@ -1,11 +1,13 @@
 /**
- * Lista todo lo que sigue siendo un marcador y debe reemplazarse antes del deploy.
+ * Lista lo que sigue pendiente antes del deploy.
  *
  *   node scripts/marcadores-pendientes.mjs
  *
- * Sale con código 1 si queda alguno: úsalo como puerta antes de publicar.
- * NO está enganchado al build a propósito — durante el desarrollo los marcadores
- * son legítimos y romper el build por ellos sería ruido.
+ * Sale con código 1 si queda algo. NO está enganchado al build a propósito: durante
+ * el desarrollo los marcadores son legítimos y romper el build por ellos sería ruido.
+ *
+ * Solo revisa lo que vive en el código. Los datos de contacto ahora están en Sanity,
+ * así que esos se comprueban en el Studio, no aquí — se listan como recordatorio.
  */
 import { readFile, access } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -15,68 +17,80 @@ const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
 const leer = (p) => readFile(join(raiz, p), 'utf8');
 const existe = (p) => access(join(raiz, p)).then(() => true, () => false);
 
-const pendientes = [];
-const anotar = (area, detalle, donde) => pendientes.push({ area, detalle, donde });
+const bloqueantes = [];
+const recordatorios = [];
 
 const config = await leer('astro.config.mjs');
-const contenido = await leer('src/lib/contenido-temporal.ts');
 
 // --- dominio ---
 const sitio = config.match(/const SITIO = '([^']+)'/)?.[1];
 if (sitio === 'https://ebdesing.com')
-  anotar('Dominio', `sigue en ${sitio} sin confirmar — de él dependen canonical, sitemap y JSON-LD`, 'astro.config.mjs');
+  bloqueantes.push([
+    'Dominio sin confirmar',
+    `sigue en ${sitio} — de él dependen canonical, sitemap, JSON-LD y el pie de las imágenes OG`,
+    'astro.config.mjs · si cambia, corre también: npm run generar-og',
+  ]);
 
-// --- datos de contacto ---
-const telefono = contenido.match(/telefonoWhatsapp: '([^']+)'/)?.[1];
-if (telefono === '593000000000')
-  anotar('WhatsApp', `número marcador ${telefono} — el botón de WhatsApp no lleva a ninguna parte`, 'src/lib/contenido-temporal.ts');
-
-const email = contenido.match(/emailContacto: '([^']+)'/)?.[1];
-if (email === 'contacto@ebdesing.com')
-  anotar('Correo', `${email} sin confirmar — aparece en footer, contacto y JSON-LD`, 'src/lib/contenido-temporal.ts');
-
-const direccion = contenido.match(/direccion: '([^']+)'/)?.[1];
-if (direccion === 'Ecuador')
-  anotar('Dirección', 'solo dice "Ecuador"; conviene ciudad o dirección real para SEO local', 'src/lib/contenido-temporal.ts');
-
-// --- redes ---
-for (const [, red, url] of contenido.matchAll(/(instagram|facebook|tiktok): '([^']+)'/g)) {
-  try {
-    if (new URL(url).pathname.replace(/\/$/, '') === '')
-      anotar('Redes', `${red} apunta a la portada de la plataforma, no a un perfil`, 'src/lib/contenido-temporal.ts');
-  } catch {
-    anotar('Redes', `${red} tiene una URL inválida: ${url}`, 'src/lib/contenido-temporal.ts');
-  }
-}
-
-// --- copy y contenido de ejemplo ---
-if (/Cliente de ejemplo|Nombre del cliente|Empresa de ejemplo/.test(contenido))
-  anotar('Contenido', 'proyectos y testimonios son de ejemplo; se reemplazan con Sanity (pasos 6-7)', 'src/lib/contenido-temporal.ts');
-
-// --- artefactos temporales ---
+// --- página de desarrollo ---
 if (await existe('src/pages/components-preview.astro'))
-  anotar('Limpieza', 'la página /components-preview sigue existiendo; bórrala antes del deploy', 'src/pages/components-preview.astro');
+  bloqueantes.push([
+    'Página de desarrollo publicada',
+    '/components-preview sigue existiendo y se construye con el sitio',
+    'bórrala: rm src/pages/components-preview.astro',
+  ]);
 
-if (await existe('src/lib/contenido-temporal.ts'))
-  anotar('Sanity', 'el contenido aún sale del módulo temporal, no del CMS', 'src/lib/contenido-temporal.ts');
-
-// --- logo ---
+// --- logo del JSON-LD ---
 if ((await leer('src/lib/seo.ts')).includes("absoluta('/favicon.svg'"))
-  anotar('Logo', 'el JSON-LD usa el favicon como logo; Google prefiere un PNG de 112px o más', 'src/lib/seo.ts');
+  bloqueantes.push([
+    'Logo del JSON-LD',
+    'usa el favicon; Google prefiere un PNG de 112px o más para rich results',
+    'src/lib/seo.ts',
+  ]);
 
-// --- salida ---
-if (pendientes.length === 0) {
-  console.log('\nSin marcadores pendientes. Listo para deploy.\n');
+// --- copy escrito por Claude, no por EBDesing ---
+recordatorios.push([
+  'Copy sin revisar',
+  'Hero, CTA y Sobre nosotros los redactó Claude inventando cómo trabaja EBDesing',
+  'src/components/sections/Hero.astro, CTA.astro y src/pages/sobre-nosotros.astro',
+]);
+
+// --- lo que ahora se comprueba en Sanity ---
+recordatorios.push([
+  'Documento de configuración',
+  'sin `configuracionSitio` publicado en Sanity el build falla: de ahí salen WhatsApp, correo y redes',
+  'Studio → Configuración del sitio',
+]);
+recordatorios.push([
+  'Contenido real',
+  'servicios, proyectos y testimonios deben existir en Sanity; el sitio se construye vacío si no hay',
+  'Studio → Portafolio / Servicios / Testimonios',
+]);
+recordatorios.push([
+  'Colaboradora de EBDesing',
+  'falta invitarla para que pueda editar',
+  'sanity.io → Project → Members',
+]);
+recordatorios.push([
+  'Webhook de reconstrucción',
+  'sin él, publicar en Sanity no actualiza el sitio (§12 del blueprint)',
+  'Sanity Settings → API → Webhooks → deploy hook de Cloudflare Pages',
+]);
+
+const imprimir = (titulo, lista, marca) => {
+  if (lista.length === 0) return;
+  console.log(`\n${titulo}\n`);
+  for (const [nombre, detalle, donde] of lista) {
+    console.log(`  ${marca} ${nombre}`);
+    console.log(`     ${detalle}`);
+    console.log(`     ${donde}\n`);
+  }
+};
+
+imprimir(`BLOQUEANTES (${bloqueantes.length}) — arréglalos antes de publicar`, bloqueantes, '✗');
+imprimir(`RECORDATORIOS (${recordatorios.length}) — fuera del código`, recordatorios, '·');
+
+if (bloqueantes.length === 0) {
+  console.log('Sin bloqueantes en el código.\n');
   process.exit(0);
 }
-
-console.log(`\n${pendientes.length} marcador(es) pendiente(s) antes del deploy:\n`);
-let areaPrevia = null;
-for (const p of pendientes) {
-  if (p.area !== areaPrevia) console.log(`  ${p.area}`);
-  areaPrevia = p.area;
-  console.log(`    · ${p.detalle}`);
-  console.log(`      ${p.donde}`);
-}
-console.log('');
 process.exit(1);

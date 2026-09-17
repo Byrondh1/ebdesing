@@ -1,14 +1,14 @@
 ---
 import { navPrincipal } from '../lib/nav';
-import { configuracionSitio, enlaceWhatsapp } from '../lib/contenido-temporal';
+import { obtenerConfiguracion, enlaceWhatsapp } from '../lib/contenido';
 
-const { emailContacto, direccion, redesSociales } = configuracionSitio;
+const { emailContacto, direccion, redesSociales, telefonoWhatsapp } = await obtenerConfiguracion();
 const anio = new Date().getFullYear();
 
 const redes = [
-  { etiqueta: 'Instagram', href: redesSociales.instagram },
-  { etiqueta: 'Facebook', href: redesSociales.facebook },
-  { etiqueta: 'TikTok', href: redesSociales.tiktok },
+  { etiqueta: 'Instagram', href: redesSociales?.instagram },
+  { etiqueta: 'Facebook', href: redesSociales?.facebook },
+  { etiqueta: 'TikTok', href: redesSociales?.tiktok },
 ].filter((r): r is { etiqueta: string; href: string } => Boolean(r.href));
 ---
 
@@ -54,7 +54,7 @@ const redes = [
         </li>
         <li>
           <a
-            href={enlaceWhatsapp()}
+            href={enlaceWhatsapp(telefonoWhatsapp)}
             class="rounded hover:text-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
           >
             Escribir por WhatsApp

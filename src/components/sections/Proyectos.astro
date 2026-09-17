@@ -1,7 +1,8 @@
 ---
 import Badge from '../ui/Badge.astro';
 import Button from '../ui/Button.astro';
-import type { Proyecto } from '../../lib/contenido-temporal';
+import { recortar } from '../../lib/imagenes';
+import type { Proyecto } from '../../lib/tipos';
 
 interface Props {
   proyectos: Proyecto[];
@@ -26,36 +27,65 @@ const {
         <h2 class="font-display text-3xl font-bold sm:text-4xl">{titulo}</h2>
         <p class="mt-3 max-w-xl text-brand-white/70">{texto}</p>
       </div>
-      {mostrarEnlace && (
-        <Button href="/portafolio" variante="contorno">
-          Ver portafolio
-        </Button>
-      )}
+      {
+        mostrarEnlace && (
+          <Button href="/portafolio" variante="contorno">
+            Ver portafolio
+          </Button>
+        )
+      }
     </div>
 
-    <ul class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {
-        proyectos.map((proyecto) => (
-          <li class="flex h-full flex-col overflow-hidden rounded-lg border border-brand-gray/30">
-            {/* Marcador de posición: las imágenes reales llegan en el paso 11 del BUILD ORDER. */}
-            <div
-              class="flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-brand-gray/40 to-brand-black"
-              aria-hidden="true"
-            >
-              <span class="font-display text-4xl font-bold text-brand-gold/30">3B</span>
-            </div>
+    {
+      proyectos.length === 0 ? (
+        <p class="mt-12 rounded-lg border border-dashed border-brand-gray/40 p-8 text-brand-white/60">
+          Todavía no hay proyectos publicados.
+        </p>
+      ) : (
+        <ul class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {proyectos.map((proyecto) => {
+            const imagen = recortar(proyecto.imagenPrincipal, 800, 600);
+            return (
+              <li class="h-full">
+                <a
+                  href={`/portafolio/${proyecto.slug}/`}
+                  class="group flex h-full flex-col overflow-hidden rounded-lg border border-brand-gray/30 transition-colors hover:border-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
+                >
+                  {imagen ? (
+                    <img
+                      src={imagen}
+                      alt={proyecto.imagenPrincipal?.alt || proyecto.titulo}
+                      width="800"
+                      height="600"
+                      loading="lazy"
+                      decoding="async"
+                      class="aspect-[4/3] w-full object-cover"
+                    />
+                  ) : (
+                    <div
+                      class="flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-brand-gray/40 to-brand-black"
+                      aria-hidden="true"
+                    >
+                      <span class="font-display text-4xl font-bold text-brand-gold/30">3B</span>
+                    </div>
+                  )}
 
-            <div class="flex flex-1 flex-col p-6">
-              <Badge variante="oro">{proyecto.categoria}</Badge>
-              <h3 class="mt-3 font-display text-lg font-bold">{proyecto.titulo}</h3>
-              <p class="mt-2 flex-1 text-sm text-brand-white/70">{proyecto.descripcion}</p>
-              <p class="mt-4 border-t border-brand-gray/30 pt-4 text-sm text-brand-gold">
-                {proyecto.resultado}
-              </p>
-            </div>
-          </li>
-        ))
-      }
-    </ul>
+                  <div class="flex flex-1 flex-col p-6">
+                    <Badge variante="oro">{proyecto.categoria}</Badge>
+                    <h3 class="mt-3 font-display text-lg font-bold group-hover:text-brand-gold">
+                      {proyecto.titulo}
+                    </h3>
+                    <p class="mt-2 flex-1 text-sm text-brand-white/70">{proyecto.descripcion}</p>
+                    <p class="mt-4 border-t border-brand-gray/30 pt-4 text-sm text-brand-gold">
+                      {proyecto.resultado}
+                    </p>
+                  </div>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      )
+    }
   </div>
 </section>

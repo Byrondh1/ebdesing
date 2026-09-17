@@ -5,18 +5,28 @@ import Servicios from '../components/sections/Servicios.astro';
 import Proyectos from '../components/sections/Proyectos.astro';
 import Testimonios from '../components/sections/Testimonios.astro';
 import CTA from '../components/sections/CTA.astro';
-import { serviciosOrdenados, proyectosDestacados, testimonios } from '../lib/contenido-temporal';
+import {
+  obtenerServicios,
+  obtenerProyectosDestacados,
+  obtenerTestimonios,
+} from '../lib/contenido';
 import { listaDeServicios } from '../lib/seo';
+
+const [servicios, proyectosDestacados, testimonios] = await Promise.all([
+  obtenerServicios(),
+  obtenerProyectosDestacados(),
+  obtenerTestimonios(),
+]);
 ---
 
 <Base
   titulo="Agencia de Diseño y Publicidad"
   descripcion="EBDesing diseña identidad de marca, campañas publicitarias y gran formato en Ecuador. Pide tu cotización por WhatsApp o formulario."
   ogImagen="/og/inicio.png"
-  jsonLd={[listaDeServicios(serviciosOrdenados, Astro.site)]}
+  jsonLd={[listaDeServicios(servicios, Astro.site)]}
 >
   <Hero />
-  <Servicios servicios={serviciosOrdenados} />
+  <Servicios servicios={servicios} />
   <Proyectos proyectos={proyectosDestacados} />
   <Testimonios testimonios={testimonios} />
   <CTA />

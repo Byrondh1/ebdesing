@@ -1,6 +1,8 @@
 ---
 import Button from '../ui/Button.astro';
-import { enlaceWhatsapp } from '../../lib/contenido-temporal';
+import { obtenerConfiguracion, enlaceWhatsapp } from '../../lib/contenido';
+
+const { telefonoWhatsapp } = await obtenerConfiguracion();
 
 // Ojo con el titular: Astro colapsa el salto de línea que precede a un <span>, así que
 // el texto y sus spans van en la misma línea o se come el espacio entre palabras.
@@ -23,7 +25,7 @@ import { enlaceWhatsapp } from '../../lib/contenido-temporal';
 
     <div class="mt-10 flex flex-col gap-3 sm:flex-row">
       <Button href="/contacto" tamano="lg">Pedir cotización</Button>
-      <Button href={enlaceWhatsapp()} variante="contorno" tamano="lg">Escribir por WhatsApp</Button>
+      <Button href={enlaceWhatsapp(telefonoWhatsapp)} variante="contorno" tamano="lg">Escribir por WhatsApp</Button>
     </div>
   </div>
 </section>

@@ -1,6 +1,8 @@
 ---
 import Button from '../ui/Button.astro';
-import { enlaceWhatsapp } from '../../lib/contenido-temporal';
+import { obtenerConfiguracion, enlaceWhatsapp } from '../../lib/contenido';
+
+const { telefonoWhatsapp } = await obtenerConfiguracion();
 
 interface Props {
   titulo?: string;
@@ -21,7 +23,7 @@ const {
 
     <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
       <Button href="/contacto" variante="secundario" tamano="lg">Pedir cotización</Button>
-      <Button href={enlaceWhatsapp()} variante="contorno" tamano="lg">WhatsApp</Button>
+      <Button href={enlaceWhatsapp(telefonoWhatsapp)} variante="contorno" tamano="lg">WhatsApp</Button>
     </div>
   </div>
 </section>

@@ -3,6 +3,7 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { organizacion, sitioWeb } from '../lib/seo';
+import { obtenerConfiguracion } from '../lib/contenido';
 
 interface Props {
   /** Parte específica de la página; Base le añade el nombre de la marca. */
@@ -23,7 +24,9 @@ const ogImagenAbsoluta = ogImagen ? new URL(ogImagen, Astro.site).href : undefin
 
 // Organization y WebSite identifican al dominio entero, así que van en cada página.
 // Las páginas no indexadas no aportan nada aquí y se quedan sin datos estructurados.
-const schemas = noindex ? [] : [organizacion(Astro.site), sitioWeb(Astro.site), ...jsonLd];
+const schemas = noindex
+  ? []
+  : [organizacion(Astro.site, await obtenerConfiguracion()), sitioWeb(Astro.site), ...jsonLd];
 ---
 
 <!doctype html>

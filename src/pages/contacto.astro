@@ -5,10 +5,10 @@
  */
 import Base from '../layouts/Base.astro';
 import Button from '../components/ui/Button.astro';
-import { configuracionSitio, enlaceWhatsapp } from '../lib/contenido-temporal';
+import { obtenerConfiguracion, enlaceWhatsapp } from '../lib/contenido';
 import { migas } from '../lib/seo';
 
-const { emailContacto, direccion } = configuracionSitio;
+const { emailContacto, direccion, telefonoWhatsapp } = await obtenerConfiguracion();
 ---
 
 <Base
@@ -35,7 +35,7 @@ const { emailContacto, direccion } = configuracionSitio;
         </p>
 
         <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-          <Button href={enlaceWhatsapp()}>WhatsApp</Button>
+          <Button href={enlaceWhatsapp(telefonoWhatsapp)}>WhatsApp</Button>
           <Button href={`mailto:${emailContacto}`} variante="contorno">Correo</Button>
         </div>
 

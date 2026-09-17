@@ -1,0 +1,9 @@
+import { configuracionSitio } from './configuracionSitio';
+import { proyecto } from './proyecto';
+import { servicio } from './servicio';
+import { testimonio } from './testimonio';
+
+/** Tipos de los que solo debe existir un documento. */
+export const SINGLETONS = ['configuracionSitio'];
+
+export const schemaTypes = [proyecto, servicio, testimonio, configuracionSitio];

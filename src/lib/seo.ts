@@ -1,7 +1,13 @@
-import { configuracionSitio, TELEFONO_MARCADOR, type Servicio } from './contenido-temporal';
+import type { ConfiguracionSitio, Servicio } from './tipos';
 
 export const NOMBRE_MARCA = 'EBDesing';
 export const NOMBRE_COMERCIAL = '3B Designs';
+
+/**
+ * Teléfono de ejemplo. Mientras el dato sea este, el JSON-LD lo omite en vez de
+ * publicar un número falso como dato estructurado.
+ */
+export const TELEFONO_MARCADOR = '593000000000';
 
 /** Convierte una ruta relativa en absoluta contra el dominio del sitio. */
 export function absoluta(ruta: string, sitio: URL | undefined): string {
@@ -10,24 +16,28 @@ export function absoluta(ruta: string, sitio: URL | undefined): string {
 }
 
 /**
- * Organización. Va en todas las páginas: es la entidad que Google asocia al dominio.
+ * Un dato estructurado falso es peor que uno ausente: le afirma a Google algo
+ * incorrecto y verificable sobre el negocio. Estas dos guardas omiten los datos
+ * de ejemplo; al poner los reales aparecen solos.
+ */
+const esPerfilReal = (url: string) => {
+  try {
+    return new URL(url).pathname.replace(/\/$/, '').length > 0;
+  } catch {
+    return false;
+  }
+};
+
+const esTelefonoReal = (telefono: string) => Boolean(telefono) && telefono !== TELEFONO_MARCADOR;
+
+/**
+ * Organización: la entidad que Google asocia al dominio. Va en todas las páginas.
  * TODO(Byron): `logo` apunta al favicon. Para rich results conviene un PNG del logo
  * de al menos 112x112 — reemplazar cuando exista el archivo de marca.
  */
-export function organizacion(sitio: URL | undefined) {
-  const { emailContacto, telefonoWhatsapp, direccion, redesSociales } = configuracionSitio;
-
-  // Un dato estructurado falso es peor que uno ausente: le afirma a Google algo
-  // incorrecto sobre el negocio. Mientras sean marcadores, se omiten.
-  const esPerfilReal = (url: string) => {
-    try {
-      return new URL(url).pathname.replace(/\/$/, '').length > 0;
-    } catch {
-      return false;
-    }
-  };
-  const redes = (Object.values(redesSociales).filter(Boolean) as string[]).filter(esPerfilReal);
-  const telefonoReal = telefonoWhatsapp !== TELEFONO_MARCADOR;
+export function organizacion(sitio: URL | undefined, config: ConfiguracionSitio) {
+  const { emailContacto, telefonoWhatsapp, direccion, redesSociales } = config;
+  const redes = (Object.values(redesSociales ?? {}).filter(Boolean) as string[]).filter(esPerfilReal);
 
   return {
     '@context': 'https://schema.org',
@@ -39,12 +49,12 @@ export function organizacion(sitio: URL | undefined) {
     logo: absoluta('/favicon.svg', sitio),
     description:
       'Agencia de diseño y publicidad en Ecuador: identidad de marca, campañas, gran formato y contenido para redes.',
-    email: emailContacto,
-    ...(telefonoReal && { telephone: `+${telefonoWhatsapp}` }),
+    ...(emailContacto && { email: emailContacto }),
+    ...(esTelefonoReal(telefonoWhatsapp) && { telephone: `+${telefonoWhatsapp}` }),
     address: {
       '@type': 'PostalAddress',
       addressCountry: 'EC',
-      addressLocality: direccion,
+      ...(direccion && { addressLocality: direccion }),
     },
     areaServed: { '@type': 'Country', name: 'Ecuador' },
     ...(redes.length > 0 && { sameAs: redes }),
@@ -82,6 +92,23 @@ export function listaDeServicios(servicios: Servicio[], sitio: URL | undefined) 
         areaServed: { '@type': 'Country', name: 'Ecuador' },
       },
     })),
+  };
+}
+
+/** Ficha de un proyecto del portafolio, para su página de detalle. */
+export function obraCreativa(
+  proyecto: { titulo: string; slug: string; descripcion: string; cliente: string; imagenPrincipal?: { url: string } },
+  sitio: URL | undefined
+) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: proyecto.titulo,
+    description: proyecto.descripcion,
+    url: absoluta(`/portafolio/${proyecto.slug}/`, sitio),
+    creator: { '@id': absoluta('/#organizacion', sitio) },
+    ...(proyecto.imagenPrincipal?.url && { image: proyecto.imagenPrincipal.url }),
+    ...(proyecto.cliente && { about: proyecto.cliente }),
   };
 }
 

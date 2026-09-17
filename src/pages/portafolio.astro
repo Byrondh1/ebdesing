@@ -1,16 +1,11 @@
 ---
-/**
- * Listado del portafolio.
- * PASO 7 del BUILD ORDER reemplaza `proyectos` por un fetch a Sanity y añade
- * la ruta de detalle `/portafolio/[slug]`. La maqueta ya es la definitiva.
- */
 import Base from '../layouts/Base.astro';
 import Proyectos from '../components/sections/Proyectos.astro';
 import CTA from '../components/sections/CTA.astro';
-import { proyectos } from '../lib/contenido-temporal';
+import { obtenerProyectos } from '../lib/contenido';
 import { migas } from '../lib/seo';
 
-const ordenados = [...proyectos].sort((a, b) => a.orden - b.orden);
+const proyectos = await obtenerProyectos();
 ---
 
 <Base
@@ -29,7 +24,7 @@ const ordenados = [...proyectos].sort((a, b) => a.orden - b.orden);
   </section>
 
   <Proyectos
-    proyectos={ordenados}
+    proyectos={proyectos}
     titulo="Proyectos"
     texto="Cada uno con lo que se pidió y lo que se entregó."
     mostrarEnlace={false}

@@ -1,58 +1,18 @@
 /**
- * CONTENIDO TEMPORAL — se elimina en los pasos 6-7 del BUILD ORDER.
+ * CONTENIDO DE EJEMPLO — respaldo local para trabajar sin red.
  *
- * La regla del proyecto es que servicios, proyectos y testimonios viven en Sanity,
- * nunca hardcodeados en componentes .astro. Este módulo respeta esa regla: los
- * componentes reciben los datos por props y no saben de dónde vienen. Cuando
- * exista el proyecto de Sanity, se sustituye la importación por un fetch en
- * `src/lib/sanity.ts` y los componentes no cambian.
+ * NO es el origen de datos del sitio: eso es Sanity (`sanity.ts`). Esto solo se usa
+ * cuando USAR_CONTENIDO_LOCAL=1, y `contenido.ts` decide cuándo. Las páginas nunca
+ * importan de aquí directamente.
  *
- * Los tipos replican los schemas de §4 del blueprint a propósito, para que el
- * cambio sea sin fricción.
+ * Cumple los mismos tipos que Sanity, así que sirve para verificar el build sin red.
  */
-
-export interface ConfiguracionSitio {
-  telefonoWhatsapp: string;
-  emailContacto: string;
-  direccion: string;
-  redesSociales: {
-    instagram?: string;
-    facebook?: string;
-    tiktok?: string;
-  };
-}
-
-export interface Servicio {
-  titulo: string;
-  slug: string;
-  icono: string;
-  descripcionCorta: string;
-  descripcionCompleta: string;
-  orden: number;
-}
-
-export interface Proyecto {
-  titulo: string;
-  slug: string;
-  cliente: string;
-  categoria: 'diseño' | 'publicidad' | 'branding';
-  descripcion: string;
-  resultado: string;
-  destacado: boolean;
-  orden: number;
-}
-
-export interface Testimonio {
-  nombreCliente: string;
-  empresa: string;
-  cita: string;
-}
-
-/**
- * Valor centinela del teléfono. Mientras siga siendo este, el JSON-LD lo omite en vez
- * de publicar un número falso como dato estructurado.
- */
-export const TELEFONO_MARCADOR = '593000000000';
+import type {
+  ConfiguracionSitio,
+  Proyecto,
+  Servicio,
+  Testimonio,
+} from './tipos';
 
 /** TODO(Byron): confirmar teléfono, email y dirección reales antes del deploy. */
 export const configuracionSitio: ConfiguracionSitio = {
@@ -157,15 +117,3 @@ export const testimonios: Testimonio[] = [
     cita: 'Nos resolvieron el rótulo y las piezas de redes con la misma línea. Por fin todo se ve de la misma marca.',
   },
 ];
-
-/** Los proyectos que aparecen en la Home. */
-export const proyectosDestacados = proyectos
-  .filter((p) => p.destacado)
-  .sort((a, b) => a.orden - b.orden);
-
-export const serviciosOrdenados = [...servicios].sort((a, b) => a.orden - b.orden);
-
-/** Link de WhatsApp con mensaje prellenado — §5 del blueprint, cero backend. */
-export function enlaceWhatsapp(mensaje = 'Hola, quiero cotizar un proyecto.'): string {
-  return `https://wa.me/${configuracionSitio.telefonoWhatsapp}?text=${encodeURIComponent(mensaje)}`;
-}

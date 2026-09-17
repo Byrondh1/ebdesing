@@ -13,7 +13,11 @@ const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(raiz, 'dist');
 
 const problemas = [];
+const avisos = [];
 const falla = (ruta, mensaje) => problemas.push(`${ruta}: ${mensaje}`);
+// La longitud no está en el "Done when" del paso 9 y el texto lo escribe el editor
+// en Sanity: avisar sí, romperle el build por una descripción corta no.
+const avisar = (ruta, mensaje) => avisos.push(`${ruta}: ${mensaje}`);
 
 async function listarHtml(dir) {
   const salida = [];
@@ -41,7 +45,7 @@ for (const archivo of archivos) {
   const titulo = extraer(html, /<title>([^<]*)<\/title>/);
   if (!titulo) falla(ruta, 'falta <title>');
   else {
-    if (titulo.length > 65) falla(ruta, `<title> de ${titulo.length} caracteres (máx. 65)`);
+    if (titulo.length > 65) avisar(ruta, `<title> de ${titulo.length} caracteres (se recomienda máx. 65)`);
     if (titulos.has(titulo)) falla(ruta, `<title> duplicado con ${titulos.get(titulo)}`);
     titulos.set(titulo, ruta);
   }
@@ -51,7 +55,7 @@ for (const archivo of archivos) {
   if (!desc) falla(ruta, 'falta meta description');
   else {
     if (desc.length < 50 || desc.length > 165)
-      falla(ruta, `description de ${desc.length} caracteres (se espera 50-165)`);
+      avisar(ruta, `description de ${desc.length} caracteres (se recomienda 50-165)`);
     if (descripciones.has(desc)) falla(ruta, `description duplicada con ${descripciones.get(desc)}`);
     descripciones.set(desc, ruta);
   }
@@ -79,8 +83,22 @@ for (const archivo of archivos) {
   if (!noindex) {
     if (!og) falla(ruta, 'falta og:image');
     else {
-      const local = join(dist, new URL(og).pathname);
-      if (!(await existe(local))) falla(ruta, `og:image apunta a un archivo que no existe: ${og}`);
+      let url;
+      try {
+        url = new URL(og);
+      } catch {
+        falla(ruta, `og:image no es una URL absoluta: ${og}`);
+      }
+      // Solo se puede comprobar en disco lo que servimos nosotros. Las imágenes de
+      // proyecto viven en la CDN de Sanity: ahí basta con exigir que sea https.
+      if (url) {
+        if (url.origin === new URL(canonical ?? 'https://x/').origin) {
+          if (!(await existe(join(dist, url.pathname))))
+            falla(ruta, `og:image apunta a un archivo que no existe: ${og}`);
+        } else if (url.protocol !== 'https:') {
+          falla(ruta, `og:image externa no es https: ${og}`);
+        }
+      }
     }
   }
 
@@ -118,6 +136,11 @@ else {
 if (!(await existe(join(dist, 'robots.txt')))) falla('robots.txt', 'no existe');
 
 console.log(`\nAuditoría SEO — ${archivos.length} páginas, ${titulos.size} títulos únicos, ${descripciones.size} descripciones únicas`);
+if (avisos.length) {
+  console.log(`\n${avisos.length} aviso(s), no bloquean:`);
+  for (const a of avisos) console.log('  ! ' + a);
+}
+
 if (problemas.length) {
   console.error(`\n${problemas.length} problema(s):`);
   for (const p of problemas) console.error('  ✗ ' + p);
