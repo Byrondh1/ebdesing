@@ -45,3 +45,17 @@ Ver `.env.example`. Nunca hardcodear `RESEND_API_KEY` ni el project id de Sanity
 ## Idioma
 El proyecto y su contenido son en español (mercado: Ecuador). Escribe código, comentarios,
 commits y copy del sitio en español.
+
+## Divergencias con el blueprint (decididas, no las "corrijas")
+- **Tokens de color:** el blueprint §7 los llama `brand-yellow`; en el código son
+  **`brand-gold`** / `brand-gold-dark` (mismos hex). Usa los nombres del código.
+- **Scaffold:** se creó a mano, no con `npm create astro@latest`. La política de egress de
+  las sesiones de Claude Code en web bloquea `github.com`/`codeload.github.com`, y ese comando
+  descarga la plantilla desde ahí. El resultado es equivalente a la plantilla `minimal`.
+- **Aún sin instalar** (llegan en su paso del BUILD ORDER): `@astrojs/cloudflare` y `resend`
+  (paso 8), `@sanity/client` (paso 6), `wrangler` (paso 14).
+
+## Estado actual
+Paso 1 del BUILD ORDER completo: scaffold + Tailwind 4 + tokens de marca, `npm run build` en 0.
+`src/pages/index.astro` es una página puente que solo verifica los tokens — se reemplaza en el paso 4.
+Siguiente: paso 2, `Base.astro` con head/meta/OG/canonical.

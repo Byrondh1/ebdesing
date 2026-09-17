@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+/*
+ * Tokens de marca — EBDesing / 3B Designs
+ * Tailwind 4 es CSS-first: los tokens se declaran aquí con @theme, NO en tailwind.config.js.
+ * Cada token genera utilidades automáticamente (bg-brand-gold, text-brand-black, font-display...).
+ *
+ * El dorado sale del logo según §7 del blueprint (#F5B800). Si el hex exacto de marca
+ * resulta ser otro, cambiar SOLO esta línea: todo el sitio la hereda.
+ */
+@theme {
+  /* Colores */
+  --color-brand-gold: #F5B800;
+  --color-brand-gold-dark: #D9A300;
+  --color-brand-black: #0A0A0A;
+  --color-brand-white: #FFFFFF;
+  --color-brand-gray: #4A4A4A;
+
+  /* Tipografía — las fuentes se autoalojan en el paso 11 del BUILD ORDER.
+     Hasta entonces caen al fallback del sistema, sin peticiones a terceros. */
+  --font-display: "Archivo Black", "Oswald", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+}
+
+/* Base mínima: mobile-first, tipografía de cuerpo por defecto. */
+@layer base {
+  body {
+    font-family: var(--font-body);
+    background-color: var(--color-brand-white);
+    color: var(--color-brand-black);
+  }
+}
