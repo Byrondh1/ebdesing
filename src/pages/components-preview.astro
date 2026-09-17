@@ -16,6 +16,7 @@ const colores = [
   { nombre: 'brand-gold-dark', clase: 'bg-brand-gold-dark', hex: '#D9A300' },
   { nombre: 'brand-black', clase: 'bg-brand-black', hex: '#0A0A0A' },
   { nombre: 'brand-gray', clase: 'bg-brand-gray', hex: '#4A4A4A' },
+  { nombre: 'brand-gray-light', clase: 'bg-brand-gray-light', hex: '#9A9A9A' },
   { nombre: 'brand-white', clase: 'bg-brand-white border border-brand-gray/40', hex: '#FFFFFF' },
 ];
 ---
@@ -78,6 +79,28 @@ const colores = [
         <p class="font-mono text-xs text-brand-gray">sobre fondo oscuro</p>
         <div class="mt-2 flex flex-wrap gap-3 text-brand-white">
           {variantesBoton.map((variante) => <Button variante={variante}>Cotizar</Button>)}
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="font-display text-xl font-bold">Contraste del dorado</h2>
+      <p class="mt-2 text-brand-gray">
+        El dorado es un acento de fondo oscuro. Sobre negro da 11:1; sobre blanco, 1.78:1 — ni
+        siquiera llega al 3:1 que pide el texto grande.
+      </p>
+      <div class="mt-4 grid gap-4 sm:grid-cols-3">
+        <div class="rounded-lg bg-brand-black p-6">
+          <p class="font-display text-2xl font-bold text-brand-gold">Dorado sobre negro</p>
+          <p class="mt-1 font-mono text-xs text-brand-gray-light">11:1 · correcto</p>
+        </div>
+        <div class="rounded-lg bg-brand-gold p-6">
+          <p class="font-display text-2xl font-bold text-brand-black">Negro sobre dorado</p>
+          <p class="mt-1 font-mono text-xs text-brand-black/70">12:1 · correcto</p>
+        </div>
+        <div class="rounded-lg border-2 border-red-600 p-6">
+          <p class="font-display text-2xl font-bold text-brand-gold">Dorado sobre blanco</p>
+          <p class="mt-1 font-mono text-xs text-red-700">1.78:1 · NO usar</p>
         </div>
       </div>
     </section>

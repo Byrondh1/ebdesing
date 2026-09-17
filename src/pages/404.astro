@@ -8,15 +8,20 @@ import Button from '../components/ui/Button.astro';
   descripcion="La página que buscas no existe o cambió de dirección."
   noindex={true}
 >
-  <section class="mx-auto flex max-w-6xl flex-col items-start px-4 py-24 sm:px-6 sm:py-32">
-    <p class="font-display text-7xl font-bold text-brand-gold sm:text-8xl">404</p>
-    <h1 class="mt-4 font-display text-3xl font-bold sm:text-4xl">Esta página no existe</h1>
-    <p class="mt-4 max-w-md text-brand-gray">
-      O cambió de dirección, o el enlace venía mal. Desde el inicio llegas a todo.
-    </p>
-    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-      <Button href="/">Volver al inicio</Button>
-      <Button href="/contacto" variante="contorno">Contacto</Button>
+  {/* Cabecera oscura como el resto de páginas internas. El dorado solo funciona
+      sobre fondo oscuro: da 11:1 sobre el negro de marca y 1.78:1 sobre blanco,
+      que no llega ni al 3:1 que pide texto grande. */}
+  <section class="bg-brand-black py-20 text-brand-white sm:py-28">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <p class="font-display text-7xl font-bold text-brand-gold sm:text-8xl">404</p>
+      <h1 class="mt-4 font-display text-3xl font-bold sm:text-4xl">Esta página no existe</h1>
+      <p class="mt-4 max-w-md text-brand-white/80">
+        O cambió de dirección, o el enlace venía mal. Desde el inicio llegas a todo.
+      </p>
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+        <Button href="/">Volver al inicio</Button>
+        <Button href="/contacto" variante="contorno">Contacto</Button>
+      </div>
     </div>
   </section>
 </Base>

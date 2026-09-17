@@ -51,7 +51,12 @@
   --color-brand-gold-dark: #D9A300;
   --color-brand-black: #0A0A0A;
   --color-brand-white: #FFFFFF;
+  /* #4A4A4A da 8.86:1 sobre blanco, pero solo 2.23:1 sobre el negro de marca: muy
+     por debajo del 4.5:1 que pide AA. Por eso hay dos grises, uno por fondo.
+     `brand-gray` para texto secundario sobre claro, `brand-gray-light` sobre oscuro
+     (7.04:1). No los intercambies: el escaneo de accesibilidad lo detecta. */
   --color-brand-gray: #4A4A4A;
+  --color-brand-gray-light: #9A9A9A;
 
   /* Tipografía. Los fallbacks son fuentes del sistema con métricas parecidas, para
      que el salto al cargar la webfont mueva el texto lo menos posible. */

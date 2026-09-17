@@ -72,7 +72,7 @@ commits y copy del sitio en español.
   así que `src/lib/imagenes.ts` las arma a mano y nos ahorramos la dependencia.
 
 ## Estado actual
-Pasos 1-9 y 11 del BUILD ORDER completos. Faltan 10, 12, 13 y 14.
+Pasos 1-9, 11 y 12 del BUILD ORDER completos. Faltan 10, 13 y 14.
 
 ### Cómo fluye el contenido
 ```
@@ -109,6 +109,8 @@ tiene 0 vulnerabilidades.
 npm run build          # postbuild: auditoría SEO que ROMPE el build si algo falla
 npm run auditar-seo    # la auditoría suelta, sobre dist/
 npm run auditar-activos # peso de imágenes y fuentes propias (también en postbuild)
+npm run pruebas        # suite E2E + accesibilidad (Playwright). Construye y sirve sola.
+npm run typecheck      # tsc --noEmit. El build NO comprueba tipos: córrelo aparte.
 npm run marcadores     # bloqueantes y recordatorios antes del deploy
 npm run generar-og     # regenera public/og/*.png (necesita: npx playwright install chromium)
 ```
@@ -176,6 +178,41 @@ en navegador. `@font-face` en `global.css` con `font-display: swap` y preload en
 - **Con adaptador, `dist/` se parte** en `dist/client/` (estáticos) y `dist/server/` (worker).
   La auditoría SEO detecta cuál usar.
 - Wrangler redirige `/ruta` a `/ruta/` con un **307**. Es normal y concuerda con los canonical.
+
+### Pruebas (paso 12)
+`npm run pruebas` levanta el servidor solo: construye, sirve el build y lo para al terminar.
+77 pruebas en dos anchos (1440px y 360px).
+
+- **Las rutas salen de `src/lib/nav.ts`**, la misma fuente que el menú. Añade una página al nav
+  y la suite la prueba sola; no hay una segunda lista que mantener.
+- Las páginas de proyecto **se descubren** del portafolio en vez de listarse, así que la suite
+  funciona igual con Sanity lleno o vacío.
+- Accesibilidad con axe, fallando en `critical` **y `serious`**: el contraste insuficiente cae en
+  `serious`, que es justo el riesgo de esta paleta.
+- Los estados del formulario se prueban interceptando `/api/cotizacion` con `page.route` (§13 lo
+  llama "mockear Resend"); las reglas del endpoint se prueban contra el servidor real.
+
+**Trampas de la suite, todas pisadas ya:**
+- `reuseExistingServer` está en **false a propósito**. Aquí el servidor sirve un build, no código
+  en vivo: reutilizar uno levantado hace que la suite apruebe contra un `dist/` viejo. Pasó.
+- `astro preview` **se demoniza**, así que matar el proceso de Playwright no mata el servidor.
+  `scripts/servidor-pruebas.mjs` lo mata por el PID de `.astro/preview.json`.
+- Ese envoltorio llama a `astro preview` directo, así que el hook `prepreview` de npm NO se
+  dispara: el envoltorio importa `preparar-preview.mjs` a mano. Sin eso, `.dev.vars` no llega a
+  `dist/server/`, el endpoint responde 502 y la prueba del envío correcto **se salta en silencio**.
+- Un `await` de una promesa que nunca resuelve no mantiene vivo a Node ("unsettled top-level
+  await"): hace falta un temporizador.
+
+### Contraste: la regla completa
+El dorado es un **acento de fondo oscuro**. Sobre el negro de marca da 11:1; sobre blanco, 1.78:1,
+que no llega ni al 3:1 de texto grande. Y hay **dos grises**:
+
+| Token | Sobre | Ratio |
+|---|---|---|
+| `brand-gray` `#4A4A4A` | claro | 8.86:1 |
+| `brand-gray-light` `#9A9A9A` | oscuro | 7.04:1 |
+
+Intercambiarlos rompe AA y el escaneo de axe lo detecta. `/components-preview` lo muestra.
 
 Siguiente: paso 10, superficie para answer-engines (`llms.txt`).
 

@@ -18,7 +18,11 @@
     "generar-og": "node scripts/generar-og.mjs",
     "marcadores": "node scripts/marcadores-pendientes.mjs",
     "prepreview": "node scripts/preparar-preview.mjs",
-    "auditar-activos": "node scripts/auditar-activos.mjs"
+    "auditar-activos": "node scripts/auditar-activos.mjs",
+    "pruebas": "playwright test",
+    "pruebas:ui": "playwright test --ui",
+    "prepruebas": "astro preview stop || true",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.3.2",
@@ -31,6 +35,8 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.56.1",
     "typescript": "~6.0.3"
   }
 }

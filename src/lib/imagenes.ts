@@ -18,9 +18,11 @@ const ES_DE_SANITY = (url: string) => url.includes('cdn.sanity.io');
  * `q=75` es el punto donde el peso baja mucho y la diferencia todavía no se ve en
  * fotografía. Para artes con texto o líneas duras conviene subirlo.
  */
-function transformar(url: string, params: Record<string, string | number>): string {
+function transformar(url: string, params: Record<string, string | number | undefined>): string {
   const query = new URLSearchParams({ auto: 'format', q: '75', fit: 'crop' });
-  for (const [clave, valor] of Object.entries(params)) query.set(clave, String(valor));
+  for (const [clave, valor] of Object.entries(params)) {
+    if (valor !== undefined) query.set(clave, String(valor));
+  }
   return `${url}?${query}`;
 }
 
