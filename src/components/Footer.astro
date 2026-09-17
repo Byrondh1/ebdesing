@@ -1,0 +1,91 @@
+---
+import { navPrincipal } from '../lib/nav';
+import { configuracionSitio, enlaceWhatsapp } from '../lib/contenido-temporal';
+
+const { emailContacto, direccion, redesSociales } = configuracionSitio;
+const anio = new Date().getFullYear();
+
+const redes = [
+  { etiqueta: 'Instagram', href: redesSociales.instagram },
+  { etiqueta: 'Facebook', href: redesSociales.facebook },
+  { etiqueta: 'TikTok', href: redesSociales.tiktok },
+].filter((r): r is { etiqueta: string; href: string } => Boolean(r.href));
+---
+
+<footer class="border-t border-brand-gray/20 bg-brand-black text-brand-white">
+  <div class="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-3">
+    <div>
+      <p class="font-display text-xl font-bold tracking-tight">
+        3B<span class="text-brand-gold">Designs</span>
+      </p>
+      <p class="mt-3 max-w-xs text-sm text-brand-gray">
+        Agencia de diseño y publicidad. Marca, campañas y gran formato en {direccion}.
+      </p>
+    </div>
+
+    <nav aria-label="Pie de página">
+      <h2 class="font-display text-sm tracking-widest text-brand-gold uppercase">Navegación</h2>
+      <ul class="mt-4 space-y-2">
+        {
+          navPrincipal.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class="rounded text-sm hover:text-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
+              >
+                {item.etiqueta}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div>
+      <h2 class="font-display text-sm tracking-widest text-brand-gold uppercase">Contacto</h2>
+      <ul class="mt-4 space-y-2 text-sm">
+        <li>
+          <a
+            href={`mailto:${emailContacto}`}
+            class="rounded hover:text-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
+          >
+            {emailContacto}
+          </a>
+        </li>
+        <li>
+          <a
+            href={enlaceWhatsapp()}
+            class="rounded hover:text-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
+          >
+            Escribir por WhatsApp
+          </a>
+        </li>
+      </ul>
+
+      {
+        redes.length > 0 && (
+          <ul class="mt-4 flex gap-4 text-sm">
+            {redes.map((red) => (
+              <li>
+                <a
+                  href={red.href}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  class="rounded hover:text-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
+                >
+                  {red.etiqueta}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+  </div>
+
+  <div class="border-t border-brand-gray/20">
+    <p class="mx-auto max-w-6xl px-4 py-6 text-xs text-brand-gray sm:px-6">
+      © {anio} EBDesing. Todos los derechos reservados.
+    </p>
+  </div>
+</footer>

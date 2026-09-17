@@ -1,0 +1,27 @@
+---
+interface Props {
+  variante?: 'oro' | 'oscuro' | 'contorno';
+  class?: string;
+}
+
+const { variante = 'oro', class: claseExtra } = Astro.props;
+
+const variantes = {
+  // Negro sobre dorado — nunca blanco (§15).
+  oro: 'bg-brand-gold text-brand-black',
+  oscuro: 'bg-brand-black text-brand-white',
+  contorno: 'border border-current bg-transparent',
+};
+---
+
+<span
+  class:list={[
+    // w-fit + self-start: como hijo de un contenedor flex, el badge se estiraría
+    // a todo el ancho por el align-items:stretch por defecto.
+    'inline-flex w-fit self-start items-center rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase',
+    variantes[variante],
+    claseExtra,
+  ]}
+>
+  <slot />
+</span>

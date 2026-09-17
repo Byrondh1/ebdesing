@@ -1,0 +1,87 @@
+---
+import { navPrincipal } from '../lib/nav';
+
+const rutaActual = Astro.url.pathname;
+const esActiva = (href: string) =>
+  href === '/' ? rutaActual === '/' : rutaActual.startsWith(href);
+---
+
+<header class="sticky top-0 z-40 border-b border-brand-gray/20 bg-brand-black text-brand-white">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+    <a href="/" class="flex items-baseline gap-2" aria-label="EBDesing — inicio">
+      <span class="font-display text-xl font-bold tracking-tight">
+        3B<span class="text-brand-gold">Designs</span>
+      </span>
+    </a>
+
+    {/* Nav de escritorio */}
+    <nav aria-label="Principal" class="hidden md:block">
+      <ul class="flex items-center gap-6">
+        {
+          navPrincipal.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={esActiva(item.href) ? 'page' : undefined}
+                class:list={[
+                  'rounded text-sm font-medium transition-colors hover:text-brand-gold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-gold',
+                  esActiva(item.href) ? 'text-brand-gold' : 'text-brand-white',
+                ]}
+              >
+                {item.etiqueta}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    {/* Botón de menú móvil. Script inline, no es una isla: el blueprint reserva
+         la hidratación para el formulario de cotización. */}
+    <button
+      type="button"
+      id="menu-toggle"
+      aria-expanded="false"
+      aria-controls="menu-movil"
+      class="rounded p-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold md:hidden"
+    >
+      <span class="sr-only">Abrir menú</span>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+    </button>
+  </div>
+
+  <nav id="menu-movil" aria-label="Principal móvil" class="hidden border-t border-brand-gray/20 md:hidden">
+    <ul class="mx-auto max-w-6xl px-4 py-2 sm:px-6">
+      {
+        navPrincipal.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              aria-current={esActiva(item.href) ? 'page' : undefined}
+              class:list={[
+                'block rounded py-3 text-base font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold',
+                esActiva(item.href) ? 'text-brand-gold' : 'text-brand-white',
+              ]}
+            >
+              {item.etiqueta}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+
+<script>
+  const boton = document.getElementById('menu-toggle');
+  const menu = document.getElementById('menu-movil');
+
+  boton?.addEventListener('click', () => {
+    const abierto = boton.getAttribute('aria-expanded') === 'true';
+    boton.setAttribute('aria-expanded', String(!abierto));
+    menu?.classList.toggle('hidden', abierto);
+    boton.querySelector('span')!.textContent = abierto ? 'Abrir menú' : 'Cerrar menú';
+  });
+</script>

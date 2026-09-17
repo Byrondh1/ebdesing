@@ -1,0 +1,112 @@
+---
+/**
+ * PÁGINA TEMPORAL — paso 3 del BUILD ORDER. Bórrala antes del deploy.
+ * Renderiza cada primitivo del sistema de diseño para revisarlos juntos.
+ */
+import Base from '../layouts/Base.astro';
+import Button from '../components/ui/Button.astro';
+import Badge from '../components/ui/Badge.astro';
+import Card from '../components/ui/Card.astro';
+
+const variantesBoton = ['primario', 'secundario', 'contorno'] as const;
+const tamanos = ['sm', 'md', 'lg'] as const;
+const variantesBadge = ['oro', 'oscuro', 'contorno'] as const;
+const colores = [
+  { nombre: 'brand-gold', clase: 'bg-brand-gold', hex: '#F5B800' },
+  { nombre: 'brand-gold-dark', clase: 'bg-brand-gold-dark', hex: '#D9A300' },
+  { nombre: 'brand-black', clase: 'bg-brand-black', hex: '#0A0A0A' },
+  { nombre: 'brand-gray', clase: 'bg-brand-gray', hex: '#4A4A4A' },
+  { nombre: 'brand-white', clase: 'bg-brand-white border border-brand-gray/40', hex: '#FFFFFF' },
+];
+---
+
+<Base
+  titulo="Vista previa de componentes"
+  descripcion="Página interna de desarrollo. Se elimina antes del deploy."
+  noindex={true}
+>
+  <div class="mx-auto max-w-6xl space-y-16 px-4 py-12 sm:px-6">
+    <header>
+      <Badge variante="oscuro">Temporal</Badge>
+      <h1 class="mt-4 font-display text-3xl font-bold sm:text-4xl">Sistema de diseño</h1>
+      <p class="mt-2 text-brand-gray">Paso 3 del BUILD ORDER. Esta página se borra antes del deploy.</p>
+    </header>
+
+    <section>
+      <h2 class="font-display text-xl font-bold">Colores</h2>
+      <ul class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-5">
+        {
+          colores.map((color) => (
+            <li>
+              <div class={`h-20 rounded-lg ${color.clase}`} />
+              <p class="mt-2 font-mono text-xs">{color.nombre}</p>
+              <p class="font-mono text-xs text-brand-gray">{color.hex}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="font-display text-xl font-bold">Tipografía</h2>
+      <div class="mt-4 space-y-3">
+        <p class="font-display text-4xl font-bold">Display · titulares</p>
+        <p class="font-body text-base">Body · texto corrido para párrafos y descripciones.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="font-display text-xl font-bold">Botones</h2>
+      {
+        variantesBoton.map((variante) => (
+          <div class="mt-6">
+            <p class="font-mono text-xs text-brand-gray">variante="{variante}"</p>
+            <div class="mt-2 flex flex-wrap items-center gap-3">
+              {tamanos.map((tamano) => (
+                <Button variante={variante} tamano={tamano}>
+                  Cotizar ({tamano})
+                </Button>
+              ))}
+              <Button variante={variante} href="/contacto">
+                Como enlace
+              </Button>
+            </div>
+          </div>
+        ))
+      }
+      <div class="mt-6 rounded-lg bg-brand-black p-6">
+        <p class="font-mono text-xs text-brand-gray">sobre fondo oscuro</p>
+        <div class="mt-2 flex flex-wrap gap-3 text-brand-white">
+          {variantesBoton.map((variante) => <Button variante={variante}>Cotizar</Button>)}
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="font-display text-xl font-bold">Badges</h2>
+      <div class="mt-4 flex flex-wrap gap-3">
+        {variantesBadge.map((variante) => <Badge variante={variante}>{variante}</Badge>)}
+      </div>
+    </section>
+
+    <section>
+      <h2 class="font-display text-xl font-bold">Cards</h2>
+      <div class="mt-4 grid gap-6 sm:grid-cols-2">
+        <Card>
+          <Badge>Estática</Badge>
+          <h3 class="mt-3 font-display text-lg font-bold">Tarjeta sin enlace</h3>
+          <p class="mt-2 text-sm text-brand-gray">
+            Contenedor base: borde, padding y fondo. El contenido va por slot.
+          </p>
+        </Card>
+        <Card href="/servicios">
+          <Badge>Enlazada</Badge>
+          <h3 class="mt-3 font-display text-lg font-bold">Tarjeta con enlace</h3>
+          <p class="mt-2 text-sm text-brand-gray">
+            Toda la superficie es clicable y el borde reacciona al hover y al foco.
+          </p>
+        </Card>
+      </div>
+    </section>
+  </div>
+</Base>

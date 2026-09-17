@@ -1,0 +1,61 @@
+---
+import Badge from '../ui/Badge.astro';
+import Button from '../ui/Button.astro';
+import type { Proyecto } from '../../lib/contenido-temporal';
+
+interface Props {
+  proyectos: Proyecto[];
+  titulo?: string;
+  texto?: string;
+  /** La Home enlaza al portafolio; la propia página de portafolio no. */
+  mostrarEnlace?: boolean;
+}
+
+const {
+  proyectos,
+  titulo = 'Trabajo reciente',
+  texto = 'Algunos proyectos entregados. El portafolio completo tiene el resto.',
+  mostrarEnlace = true,
+} = Astro.props;
+---
+
+<section class="bg-brand-black py-20 text-brand-white sm:py-24">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h2 class="font-display text-3xl font-bold sm:text-4xl">{titulo}</h2>
+        <p class="mt-3 max-w-xl text-brand-white/70">{texto}</p>
+      </div>
+      {mostrarEnlace && (
+        <Button href="/portafolio" variante="contorno">
+          Ver portafolio
+        </Button>
+      )}
+    </div>
+
+    <ul class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        proyectos.map((proyecto) => (
+          <li class="flex h-full flex-col overflow-hidden rounded-lg border border-brand-gray/30">
+            {/* Marcador de posición: las imágenes reales llegan en el paso 11 del BUILD ORDER. */}
+            <div
+              class="flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-brand-gray/40 to-brand-black"
+              aria-hidden="true"
+            >
+              <span class="font-display text-4xl font-bold text-brand-gold/30">3B</span>
+            </div>
+
+            <div class="flex flex-1 flex-col p-6">
+              <Badge variante="oro">{proyecto.categoria}</Badge>
+              <h3 class="mt-3 font-display text-lg font-bold">{proyecto.titulo}</h3>
+              <p class="mt-2 flex-1 text-sm text-brand-white/70">{proyecto.descripcion}</p>
+              <p class="mt-4 border-t border-brand-gray/30 pt-4 text-sm text-brand-gold">
+                {proyecto.resultado}
+              </p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

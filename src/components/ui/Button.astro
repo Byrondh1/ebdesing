@@ -1,0 +1,50 @@
+---
+/**
+ * Botón / enlace con estilo de marca.
+ *
+ * Regla de contraste (§15 del blueprint): sobre fondo dorado el texto SIEMPRE va
+ * en negro. La variante `primario` lo fija aquí para que no dependa de que quien
+ * la use se acuerde.
+ */
+interface Props {
+  variante?: 'primario' | 'secundario' | 'contorno';
+  tamano?: 'sm' | 'md' | 'lg';
+  /** Si viene, se renderiza como <a>; si no, como <button>. */
+  href?: string;
+  type?: 'button' | 'submit';
+  class?: string;
+  [key: string]: unknown;
+}
+
+const {
+  variante = 'primario',
+  tamano = 'md',
+  href,
+  type = 'button',
+  class: claseExtra,
+  ...resto
+} = Astro.props;
+
+const base =
+  'inline-flex items-center justify-center gap-2 rounded-md font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold disabled:opacity-50';
+
+const variantes = {
+  primario: 'bg-brand-gold text-brand-black hover:bg-brand-gold-dark',
+  secundario: 'bg-brand-black text-brand-white hover:bg-brand-gray',
+  // `border-current` hereda el color del texto: funciona sobre fondo claro y oscuro.
+  contorno: 'border-2 border-current bg-transparent hover:text-brand-gold',
+};
+
+const tamanos = {
+  sm: 'px-3 py-1.5 text-sm',
+  md: 'px-5 py-2.5 text-base',
+  lg: 'px-7 py-3.5 text-lg',
+};
+
+const clases = [base, variantes[variante], tamanos[tamano], claseExtra];
+const Etiqueta = href ? 'a' : 'button';
+---
+
+<Etiqueta class:list={clases} href={href} type={href ? undefined : type} {...resto}>
+  <slot />
+</Etiqueta>

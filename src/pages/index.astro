@@ -1,36 +1,24 @@
 ---
-import '../styles/global.css';
+import Base from '../layouts/Base.astro';
+import Hero from '../components/sections/Hero.astro';
+import Servicios from '../components/sections/Servicios.astro';
+import Proyectos from '../components/sections/Proyectos.astro';
+import Testimonios from '../components/sections/Testimonios.astro';
+import CTA from '../components/sections/CTA.astro';
+import {
+  serviciosOrdenados,
+  proyectosDestacados,
+  testimonios,
+} from '../lib/contenido-temporal';
 ---
 
-<!doctype html>
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>EBDesing — Agencia de Diseño y Publicidad</title>
-  </head>
-  <body class="bg-brand-black text-brand-white">
-    <!--
-      Página puente del paso 1 del BUILD ORDER: solo verifica que Tailwind 4
-      y los tokens de marca funcionan. El Hero real se construye en el paso 4.
-    -->
-    <main class="flex min-h-screen flex-col items-center justify-center gap-6 px-6 text-center">
-      <p class="font-display text-sm tracking-[0.3em] text-brand-gold uppercase">
-        3B Designs
-      </p>
-      <h1 class="font-display text-4xl leading-tight font-bold sm:text-6xl">
-        Agencia de <span class="text-brand-gold">Diseño</span> y Publicidad
-      </h1>
-      <p class="max-w-prose text-brand-gray">
-        Scaffold operativo. Tokens de marca cargados.
-      </p>
-      <div class="flex gap-3" aria-hidden="true">
-        <span class="size-10 rounded bg-brand-gold"></span>
-        <span class="size-10 rounded bg-brand-gold-dark"></span>
-        <span class="size-10 rounded bg-brand-white"></span>
-        <span class="size-10 rounded bg-brand-gray"></span>
-      </div>
-    </main>
-  </body>
-</html>
+<Base
+  titulo="Agencia de Diseño y Publicidad"
+  descripcion="EBDesing diseña identidad de marca, campañas publicitarias y gran formato en Ecuador. Pide tu cotización por WhatsApp o formulario."
+>
+  <Hero />
+  <Servicios servicios={serviciosOrdenados} />
+  <Proyectos proyectos={proyectosDestacados} />
+  <Testimonios testimonios={testimonios} />
+  <CTA />
+</Base>

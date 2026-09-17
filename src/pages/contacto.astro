@@ -1,0 +1,64 @@
+---
+/**
+ * PASO 8 del BUILD ORDER añade aquí la isla `FormularioCotizacion` y el endpoint
+ * `/api/cotizacion`. Los canales directos (email y WhatsApp) ya funcionan.
+ */
+import Base from '../layouts/Base.astro';
+import Button from '../components/ui/Button.astro';
+import { configuracionSitio, enlaceWhatsapp } from '../lib/contenido-temporal';
+
+const { emailContacto, direccion } = configuracionSitio;
+---
+
+<Base
+  titulo="Contacto"
+  descripcion="Pide tu cotización a EBDesing por WhatsApp o correo. Diseño y publicidad en Ecuador."
+>
+  <section class="bg-brand-black py-16 text-brand-white sm:py-20">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <h1 class="font-display text-4xl font-bold sm:text-5xl">Cotiza tu proyecto</h1>
+      <p class="mt-4 max-w-2xl text-lg text-brand-white/80">
+        Cuéntanos qué necesitas y te respondemos con una propuesta y un precio.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-20 sm:py-24">
+    <div class="mx-auto grid max-w-6xl gap-12 px-4 sm:px-6 md:grid-cols-2">
+      <div>
+        <h2 class="font-display text-2xl font-bold">Escríbenos directo</h2>
+        <p class="mt-3 text-brand-gray">
+          Si prefieres hablar antes de llenar nada, estos son los canales rápidos.
+        </p>
+
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+          <Button href={enlaceWhatsapp()}>WhatsApp</Button>
+          <Button href={`mailto:${emailContacto}`} variante="contorno">Correo</Button>
+        </div>
+
+        <dl class="mt-10 space-y-4 text-sm">
+          <div>
+            <dt class="font-display tracking-widest text-brand-gray uppercase">Correo</dt>
+            <dd class="mt-1">
+              <a href={`mailto:${emailContacto}`} class="rounded hover:text-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold">
+                {emailContacto}
+              </a>
+            </dd>
+          </div>
+          <div>
+            <dt class="font-display tracking-widest text-brand-gray uppercase">Ubicación</dt>
+            <dd class="mt-1">{direccion}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="rounded-lg border border-dashed border-brand-gray/40 p-8">
+        <h2 class="font-display text-2xl font-bold">Formulario de cotización</h2>
+        <p class="mt-3 text-brand-gray">
+          Se construye en el paso 8 del BUILD ORDER, junto con el endpoint que manda el correo.
+          Mientras tanto, usa WhatsApp o el correo de arriba.
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>

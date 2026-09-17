@@ -1,0 +1,36 @@
+---
+import Card from '../ui/Card.astro';
+import type { Servicio } from '../../lib/contenido-temporal';
+
+interface Props {
+  servicios: Servicio[];
+  /** En la Home se muestra un resumen; en /servicios, todo. */
+  mostrarCompleto?: boolean;
+}
+
+const { servicios, mostrarCompleto = false } = Astro.props;
+---
+
+<section class="bg-brand-white py-20 sm:py-24">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <h2 class="font-display text-3xl font-bold sm:text-4xl">Qué hacemos</h2>
+    <p class="mt-3 max-w-xl text-brand-gray">
+      Cuatro frentes que cubren el ciclo completo de una marca.
+    </p>
+
+    <ul class="mt-12 grid gap-6 sm:grid-cols-2">
+      {
+        servicios.map((servicio) => (
+          <li>
+            <Card class="h-full">
+              <h3 class="font-display text-xl font-bold">{servicio.titulo}</h3>
+              <p class="mt-3 text-brand-gray">
+                {mostrarCompleto ? servicio.descripcionCompleta : servicio.descripcionCorta}
+              </p>
+            </Card>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

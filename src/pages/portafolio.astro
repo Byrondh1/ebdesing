@@ -1,0 +1,36 @@
+---
+/**
+ * Listado del portafolio.
+ * PASO 7 del BUILD ORDER reemplaza `proyectos` por un fetch a Sanity y añade
+ * la ruta de detalle `/portafolio/[slug]`. La maqueta ya es la definitiva.
+ */
+import Base from '../layouts/Base.astro';
+import Proyectos from '../components/sections/Proyectos.astro';
+import CTA from '../components/sections/CTA.astro';
+import { proyectos } from '../lib/contenido-temporal';
+
+const ordenados = [...proyectos].sort((a, b) => a.orden - b.orden);
+---
+
+<Base
+  titulo="Portafolio"
+  descripcion="Proyectos de branding, publicidad y gran formato entregados por EBDesing en Ecuador."
+>
+  <section class="bg-brand-black pt-16 text-brand-white sm:pt-20">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <h1 class="font-display text-4xl font-bold sm:text-5xl">Portafolio</h1>
+      <p class="mt-4 max-w-2xl text-lg text-brand-white/80">
+        Marcas, campañas y rotulación que hemos entregado.
+      </p>
+    </div>
+  </section>
+
+  <Proyectos
+    proyectos={ordenados}
+    titulo="Proyectos"
+    texto="Cada uno con lo que se pidió y lo que se entregó."
+    mostrarEnlace={false}
+  />
+
+  <CTA />
+</Base>

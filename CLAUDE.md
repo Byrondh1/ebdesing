@@ -56,6 +56,28 @@ commits y copy del sitio en español.
   (paso 8), `@sanity/client` (paso 6), `wrangler` (paso 14).
 
 ## Estado actual
-Paso 1 del BUILD ORDER completo: scaffold + Tailwind 4 + tokens de marca, `npm run build` en 0.
-`src/pages/index.astro` es una página puente que solo verifica los tokens — se reemplaza en el paso 4.
-Siguiente: paso 2, `Base.astro` con head/meta/OG/canonical.
+Pasos 1-5 del BUILD ORDER completos. `npm run build` en 0, 7 páginas.
+
+- **Layout:** `Base.astro` recibe `titulo`/`descripcion`/`ogImagen`/`noindex` y arma head, OG,
+  canonical y skip-link. `Header` y `Footer` leen la nav de `src/lib/nav.ts` — fuente única.
+- **Sistema de diseño:** `Button` (primario/secundario/contorno × sm/md/lg), `Badge`, `Card`.
+- **Páginas:** Home (Hero, Servicios, Proyectos, Testimonios, CTA), Servicios, Sobre nosotros,
+  404 propio, y maquetas de Portafolio y Contacto.
+
+### Temporal, se borra o se reemplaza
+- `src/pages/components-preview.astro` — **bórrala antes del deploy** (paso 3).
+- `src/lib/contenido-temporal.ts` — datos con la forma exacta de los schemas de Sanity §4.
+  Los componentes reciben todo por props, así que el paso 6 solo cambia de dónde salen los datos;
+  las secciones no se tocan.
+- `/portafolio` y `/contacto` son maquetas: les falta el fetch a Sanity (paso 7) y el formulario
+  con su endpoint (paso 8).
+- `site` en `astro.config.mjs` y los datos de `configuracionSitio` son marcadores: hay que poner
+  el dominio, teléfono, correo y redes reales.
+
+### Trampas encontradas (no las repitas)
+- Astro **colapsa el salto de línea que precede a un `<span>`** y se come el espacio entre
+  palabras. Texto y spans en la misma línea.
+- Los comentarios `<!-- -->` en plantillas .astro **se envían al navegador**. Usa `{/* */}`.
+- Un hijo de contenedor flex se estira por `align-items: stretch`: `Badge` lleva `w-fit self-start`.
+
+Siguiente: paso 6, integración con Sanity (requiere el project ID de Byron).

@@ -1,0 +1,29 @@
+---
+import Button from '../ui/Button.astro';
+import { enlaceWhatsapp } from '../../lib/contenido-temporal';
+
+// Ojo con el titular: Astro colapsa el salto de línea que precede a un <span>, así que
+// el texto y sus spans van en la misma línea o se come el espacio entre palabras.
+---
+
+<section class="bg-brand-black text-brand-white">
+  <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+    <p class="font-display text-xs tracking-[0.3em] text-brand-gold uppercase">
+      Agencia de diseño y publicidad · Ecuador
+    </p>
+
+    <h1 class="mt-6 max-w-3xl font-display text-4xl leading-[1.1] font-bold sm:text-6xl">
+      Tu marca, resuelta de la <span class="text-brand-gold">idea</span> al <span class="text-brand-gold">rótulo montado</span>.
+    </h1>
+
+    <p class="mt-6 max-w-xl text-lg text-brand-white/80">
+      Diseñamos identidad, campañas y gran formato. Una sola línea gráfica en todo lo que tu
+      cliente ve, del feed de Instagram a la fachada del local.
+    </p>
+
+    <div class="mt-10 flex flex-col gap-3 sm:flex-row">
+      <Button href="/contacto" tamano="lg">Pedir cotización</Button>
+      <Button href={enlaceWhatsapp()} variante="contorno" tamano="lg">Escribir por WhatsApp</Button>
+    </div>
+  </div>
+</section>

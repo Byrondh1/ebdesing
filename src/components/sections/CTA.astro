@@ -1,0 +1,27 @@
+---
+import Button from '../ui/Button.astro';
+import { enlaceWhatsapp } from '../../lib/contenido-temporal';
+
+interface Props {
+  titulo?: string;
+  texto?: string;
+}
+
+const {
+  titulo = '¿Arrancamos con tu proyecto?',
+  texto = 'Cuéntanos qué necesitas y te mandamos una cotización. Sin compromiso.',
+} = Astro.props;
+---
+
+{/* Fondo dorado: el texto va en negro, nunca en blanco (§15 del blueprint). */}
+<section class="bg-brand-gold text-brand-black">
+  <div class="mx-auto max-w-6xl px-4 py-16 text-center sm:px-6 sm:py-20">
+    <h2 class="font-display text-3xl font-bold text-balance sm:text-4xl">{titulo}</h2>
+    <p class="mx-auto mt-4 max-w-xl text-lg text-brand-black/80">{texto}</p>
+
+    <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+      <Button href="/contacto" variante="secundario" tamano="lg">Pedir cotización</Button>
+      <Button href={enlaceWhatsapp()} variante="contorno" tamano="lg">WhatsApp</Button>
+    </div>
+  </div>
+</section>

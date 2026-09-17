@@ -1,0 +1,33 @@
+---
+import type { Testimonio } from '../../lib/contenido-temporal';
+
+interface Props {
+  testimonios: Testimonio[];
+}
+
+const { testimonios } = Astro.props;
+---
+
+<section class="bg-brand-white py-20 sm:py-24">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <h2 class="font-display text-3xl font-bold sm:text-4xl">Lo que dicen los clientes</h2>
+
+    <ul class="mt-12 grid gap-6 md:grid-cols-2">
+      {
+        testimonios.map((testimonio) => (
+          <li>
+            <figure class="flex h-full flex-col rounded-lg border-l-4 border-brand-gold bg-brand-black/[0.03] p-6">
+              <blockquote class="flex-1 text-lg text-balance">
+                <p>«{testimonio.cita}»</p>
+              </blockquote>
+              <figcaption class="mt-4 text-sm">
+                <span class="font-semibold">{testimonio.nombreCliente}</span>
+                <span class="text-brand-gray"> · {testimonio.empresa}</span>
+              </figcaption>
+            </figure>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

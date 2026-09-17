@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import Servicios from '../components/sections/Servicios.astro';
+import CTA from '../components/sections/CTA.astro';
+import { serviciosOrdenados } from '../lib/contenido-temporal';
+---
+
+<Base
+  titulo="Servicios"
+  descripcion="Identidad de marca, diseño publicitario, gran formato e impresión, y contenido para redes. Lo que hace EBDesing y cómo lo entrega."
+>
+  <section class="bg-brand-black py-16 text-brand-white sm:py-20">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <h1 class="font-display text-4xl font-bold sm:text-5xl">Servicios</h1>
+      <p class="mt-4 max-w-2xl text-lg text-brand-white/80">
+        Cubrimos el ciclo completo: cómo se ve tu marca, cómo se anuncia y cómo llega impresa.
+      </p>
+    </div>
+  </section>
+
+  <Servicios servicios={serviciosOrdenados} mostrarCompleto={true} />
+
+  <CTA
+    titulo="¿No ves lo que buscas?"
+    texto="Escríbenos igual. Si no lo hacemos nosotros, te decimos quién lo hace."
+  />
+</Base>

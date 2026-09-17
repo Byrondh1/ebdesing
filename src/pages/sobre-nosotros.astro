@@ -1,0 +1,56 @@
+---
+import Base from '../layouts/Base.astro';
+import CTA from '../components/sections/CTA.astro';
+
+const valores = [
+  {
+    titulo: 'Plazos que se cumplen',
+    texto:
+      'Te damos una fecha y la sostenemos. Si algo se atrasa, lo sabes antes de que sea un problema.',
+  },
+  {
+    titulo: 'Una sola línea gráfica',
+    texto:
+      'El rótulo, el volante y el post del martes tienen que verse de la misma marca. Ese es el trabajo.',
+  },
+  {
+    titulo: 'Archivos que quedan tuyos',
+    texto:
+      'Te entregamos los editables y el manual. No dependes de nosotros para el siguiente cambio.',
+  },
+];
+---
+
+<Base
+  titulo="Sobre nosotros"
+  descripcion="EBDesing es una agencia de diseño y publicidad en Ecuador. Marca, campañas y gran formato, con plazos que se cumplen."
+>
+  <section class="bg-brand-black py-16 text-brand-white sm:py-20">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <h1 class="font-display text-4xl font-bold sm:text-5xl">Sobre nosotros</h1>
+      <p class="mt-4 max-w-2xl text-lg text-brand-white/80">
+        Somos un equipo de diseño y publicidad en Ecuador. Trabajamos con negocios que ya
+        funcionan y necesitan verse como lo que son.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-20 sm:py-24">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <h2 class="font-display text-3xl font-bold sm:text-4xl">Cómo trabajamos</h2>
+      <ul class="mt-12 grid gap-8 md:grid-cols-3">
+        {
+          valores.map((valor) => (
+            <li>
+              <div class="h-1 w-12 bg-brand-gold" aria-hidden="true" />
+              <h3 class="mt-4 font-display text-xl font-bold">{valor.titulo}</h3>
+              <p class="mt-2 text-brand-gray">{valor.texto}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CTA />
+</Base>

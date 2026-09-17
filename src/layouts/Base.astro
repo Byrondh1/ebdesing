@@ -1,0 +1,63 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  /** Parte específica de la página; Base le añade el nombre de la marca. */
+  titulo: string;
+  descripcion: string;
+  /** Ruta a la imagen OG de la página. Las imágenes reales llegan en el paso 9. */
+  ogImagen?: string;
+  noindex?: boolean;
+}
+
+const { titulo, descripcion, ogImagen, noindex = false } = Astro.props;
+
+const tituloCompleto = `${titulo} · EBDesing`;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImagenAbsoluta = ogImagen ? new URL(ogImagen, Astro.site).href : undefined;
+---
+
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descripcion} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="EBDesing" />
+    <meta property="og:locale" content="es_EC" />
+    <meta property="og:title" content={tituloCompleto} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:url" content={canonical} />
+    {ogImagenAbsoluta && <meta property="og:image" content={ogImagenAbsoluta} />}
+
+    <meta name="twitter:card" content={ogImagenAbsoluta ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={tituloCompleto} />
+    <meta name="twitter:description" content={descripcion} />
+  </head>
+
+  <body class="flex min-h-screen flex-col bg-brand-white text-brand-black">
+    <a
+      href="#contenido"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-brand-gold focus:px-4 focus:py-2 focus:font-semibold focus:text-brand-black"
+    >
+      Saltar al contenido
+    </a>
+
+    <Header />
+
+    <main id="contenido" class="flex-1">
+      <slot />
+    </main>
+
+    <Footer />
+  </body>
+</html>

@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import Button from '../components/ui/Button.astro';
+---
+
+<Base
+  titulo="Página no encontrada"
+  descripcion="La página que buscas no existe o cambió de dirección."
+  noindex={true}
+>
+  <section class="mx-auto flex max-w-6xl flex-col items-start px-4 py-24 sm:px-6 sm:py-32">
+    <p class="font-display text-7xl font-bold text-brand-gold sm:text-8xl">404</p>
+    <h1 class="mt-4 font-display text-3xl font-bold sm:text-4xl">Esta página no existe</h1>
+    <p class="mt-4 max-w-md text-brand-gray">
+      O cambió de dirección, o el enlace venía mal. Desde el inicio llegas a todo.
+    </p>
+    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+      <Button href="/">Volver al inicio</Button>
+      <Button href="/contacto" variante="contorno">Contacto</Button>
+    </div>
+  </section>
+</Base>
