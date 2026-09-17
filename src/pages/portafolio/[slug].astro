@@ -4,7 +4,7 @@ import Badge from '../../components/ui/Badge.astro';
 import Button from '../../components/ui/Button.astro';
 import CTA from '../../components/sections/CTA.astro';
 import { obtenerProyectos, obtenerConfiguracion, enlaceWhatsapp } from '../../lib/contenido';
-import { recortar } from '../../lib/imagenes';
+import { recortar, conjuntoDeFuentes } from '../../lib/imagenes';
 import { migas, obraCreativa } from '../../lib/seo';
 import type { Proyecto } from '../../lib/tipos';
 
@@ -28,8 +28,13 @@ const { proyecto } = Astro.props;
 const { telefonoWhatsapp } = await obtenerConfiguracion();
 
 const portada = recortar(proyecto.imagenPrincipal, 1600, 900);
+const portadaFuentes = conjuntoDeFuentes(proyecto.imagenPrincipal, [640, 1024, 1600, 2000], 16 / 9);
 const galeria = (proyecto.galeria ?? [])
-  .map((imagen) => ({ ...imagen, src: recortar(imagen, 1200) }))
+  .map((imagen) => ({
+    ...imagen,
+    src: recortar(imagen, 1200),
+    fuentes: conjuntoDeFuentes(imagen, [600, 900, 1200]),
+  }))
   .filter((imagen) => Boolean(imagen.src));
 
 // La meta description sale del contenido del editor, así que hay que recortarla:
@@ -78,6 +83,8 @@ const mensajeWhatsapp = `Hola, vi el proyecto "${proyecto.titulo}" en su portafo
       portada && (
         <img
           src={portada}
+          srcset={portadaFuentes}
+          sizes="100vw"
           alt={proyecto.imagenPrincipal?.alt || proyecto.titulo}
           width="1600"
           height="900"
@@ -115,6 +122,8 @@ const mensajeWhatsapp = `Hola, vi el proyecto "${proyecto.titulo}" en su portafo
                 <li>
                   <img
                     src={imagen.src}
+                    srcset={imagen.fuentes}
+                    sizes="(min-width: 640px) 45vw, 100vw"
                     alt={imagen.alt || proyecto.titulo}
                     width={imagen.ancho ?? 1200}
                     height={imagen.alto ?? 900}

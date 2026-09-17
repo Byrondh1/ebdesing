@@ -1,7 +1,7 @@
 ---
 import Badge from '../ui/Badge.astro';
 import Button from '../ui/Button.astro';
-import { recortar } from '../../lib/imagenes';
+import { recortar, conjuntoDeFuentes } from '../../lib/imagenes';
 import type { Proyecto } from '../../lib/tipos';
 
 interface Props {
@@ -45,6 +45,7 @@ const {
         <ul class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {proyectos.map((proyecto) => {
             const imagen = recortar(proyecto.imagenPrincipal, 800, 600);
+            const fuentes = conjuntoDeFuentes(proyecto.imagenPrincipal, [400, 800, 1200], 4 / 3);
             return (
               <li class="h-full">
                 <a
@@ -54,6 +55,8 @@ const {
                   {imagen ? (
                     <img
                       src={imagen}
+                      srcset={fuentes}
+                      sizes="(min-width: 1024px) 350px, (min-width: 640px) 45vw, 100vw"
                       alt={proyecto.imagenPrincipal?.alt || proyecto.titulo}
                       width="800"
                       height="600"

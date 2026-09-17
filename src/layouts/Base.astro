@@ -37,6 +37,19 @@ const schemas = noindex
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
+    {/* Preload de las dos fuentes: ambas se usan por encima del pliegue (titular en
+        display, párrafos en body), así que esperar a que el CSS las descubra costaría
+        un salto de tipografía visible. `crossorigin` es obligatorio en fuentes aunque
+        sean del mismo origen; sin él el navegador descarga el archivo dos veces. */}
+    <link
+      rel="preload"
+      href="/fonts/archivo-black-400.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="preload" href="/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin />
+
     <title>{tituloCompleto}</title>
     <meta name="description" content={descripcion} />
     <link rel="canonical" href={canonical} />

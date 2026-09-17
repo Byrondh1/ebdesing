@@ -72,7 +72,7 @@ commits y copy del sitio en español.
   así que `src/lib/imagenes.ts` las arma a mano y nos ahorramos la dependencia.
 
 ## Estado actual
-Pasos 1-9 del BUILD ORDER completos. Faltan 10-14.
+Pasos 1-9 y 11 del BUILD ORDER completos. Faltan 10, 12, 13 y 14.
 
 ### Cómo fluye el contenido
 ```
@@ -108,6 +108,7 @@ tiene 0 vulnerabilidades.
 ```bash
 npm run build          # postbuild: auditoría SEO que ROMPE el build si algo falla
 npm run auditar-seo    # la auditoría suelta, sobre dist/
+npm run auditar-activos # peso de imágenes y fuentes propias (también en postbuild)
 npm run marcadores     # bloqueantes y recordatorios antes del deploy
 npm run generar-og     # regenera public/og/*.png (necesita: npx playwright install chromium)
 ```
@@ -123,10 +124,28 @@ navegador headless ni de las fuentes de la máquina que construye. Las páginas 
 cambio su `imagenPrincipal` de Sanity, que es una URL externa — por eso la auditoría solo comprueba
 en disco las imágenes del mismo origen.
 
-### Ojo con las fuentes
-`public/fonts/` tiene Archivo Black e Inter (variable, un archivo cubre todos los pesos), pero
-**solo las usa el generador de OG**. El sitio aún cae a las fuentes del sistema: el `@font-face`
-con preload es el paso 11. Hasta entonces las tarjetas OG y el sitio no comparten tipografía.
+### Fuentes (paso 11)
+Autoalojadas en `public/fonts/`, servidas por nosotros: **cero peticiones a terceros**, verificado
+en navegador. `@font-face` en `global.css` con `font-display: swap` y preload en `Base.astro`.
+
+- El `crossorigin` del preload es **obligatorio** aunque la fuente sea del mismo origen. Sin él el
+  navegador se la descarga dos veces.
+- Inter v20 es variable: un archivo cubre de 100 a 900.
+- **No se subsetean más** a los caracteres usados. Los títulos y descripciones vienen de Sanity, así
+  que el texto es impredecible y recortar glifos rompería contenido que aún no existe. Se usan los
+  subsets `latin` de Google, que cubren tildes, ñ y ¿ ¡.
+- `unicode-range` hace que un carácter fuera de ese rango caiga a la fuente del sistema en vez de
+  salir como un cuadrado vacío.
+- Para **reemplazar** una fuente hay que **cambiarle el nombre al archivo**: `_headers` las cachea
+  un año como `immutable`, así que con el mismo nombre los navegadores se quedarían con la vieja.
+
+### Imágenes (paso 11)
+- Las de Sanity se piden con `auto=format` (la CDN sirve AVIF o WebP según el navegador) y `q=75`,
+  con `srcset` y `sizes` para no bajar una de 1600px a un móvil de 360. Ver `src/lib/imagenes.ts`.
+- `width` y `height` explícitos en todas, que es lo que mantiene el CLS a raya.
+- `scripts/auditar-activos.mjs` corre en postbuild y **rompe el build** si una imagen propia pasa de
+  200KB o una fuente de 100KB. Las de Sanity no pasan por ahí: viven en su CDN y se acotan por URL.
+- `public/_headers` **se fusiona** con el que genera el adaptador, no lo pisa. Comprobado.
 
 ### Trampas encontradas (no las repitas)
 - Astro **colapsa el salto de línea que precede a un `<span>`** y se come el espacio entre palabras.
@@ -159,3 +178,7 @@ con preload es el paso 11. Hasta entonces las tarjetas OG y el sitio no comparte
 - Wrangler redirige `/ruta` a `/ruta/` con un **307**. Es normal y concuerda con los canonical.
 
 Siguiente: paso 10, superficie para answer-engines (`llms.txt`).
+
+### Medido, no supuesto
+Última verificación en navegador con throttling móvil: CLS entre 0.0007 y 0.009 en Home, Servicios,
+Contacto y detalle de proyecto — el umbral "bueno" de Core Web Vitals es 0.1.

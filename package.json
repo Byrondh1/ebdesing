@@ -13,11 +13,12 @@
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro check",
-    "postbuild": "node scripts/auditar-seo.mjs",
+    "postbuild": "node scripts/auditar-seo.mjs && node scripts/auditar-activos.mjs",
     "auditar-seo": "node scripts/auditar-seo.mjs",
     "generar-og": "node scripts/generar-og.mjs",
     "marcadores": "node scripts/marcadores-pendientes.mjs",
-    "prepreview": "node scripts/preparar-preview.mjs"
+    "prepreview": "node scripts/preparar-preview.mjs",
+    "auditar-activos": "node scripts/auditar-activos.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.3.2",
