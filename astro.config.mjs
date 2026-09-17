@@ -39,6 +39,7 @@ const VARIABLES_DE_BUILD = [
   'SANITY_API_VERSION',
   'USAR_CONTENIDO_LOCAL',
   'CF_PAGES',
+  'WORKERS_CI',
 ];
 
 // loadEnv con prefijo vacío junta los ficheros .env y las variables del proceso.

@@ -22,7 +22,8 @@
     "pruebas": "playwright test",
     "pruebas:ui": "playwright test --ui",
     "prepruebas": "astro preview stop || true",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lighthouse": "node scripts/auditar-lighthouse.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.3.2",
@@ -37,6 +38,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.56.1",
+    "lighthouse": "^13.4.1",
     "typescript": "~6.0.3"
   }
 }

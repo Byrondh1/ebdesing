@@ -34,9 +34,12 @@ function leerConfig() {
   return {
     resendApiKey: leer('RESEND_API_KEY'),
     contactEmail: leer('CONTACT_EMAIL'),
-    // El modo simulado se niega a activarse en Cloudflare Pages, igual que el
-    // contenido local: una cotización que no se envía es una venta perdida.
-    simulado: leer('COTIZACION_SIMULADA') === '1' && !leer('CF_PAGES'),
+    // El modo simulado se niega a activarse en un despliegue de Cloudflare, igual que
+    // el contenido local: una cotización que no se envía es una venta perdida.
+    // Pages define CF_PAGES y Workers Builds define WORKERS_CI; este proyecto va a
+    // Workers, así que mirar solo CF_PAGES dejaba el freno sin efecto.
+    simulado:
+      leer('COTIZACION_SIMULADA') === '1' && !leer('CF_PAGES') && !leer('WORKERS_CI'),
   };
 }
 

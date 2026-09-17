@@ -19,17 +19,19 @@ import type {
  * que es lo correcto — mejor un deploy roto que uno que publica en silencio un
  * portafolio vacío o de mentira.
  *
- * Además se niega a activarse en Cloudflare Pages, que define CF_PAGES. Si alguien
- * deja la variable puesta en el panel por error, el build falla en vez de publicar
- * contenido de ejemplo con el dominio real.
+ * Además se niega a activarse cuando quien construye es Cloudflare. Pages define
+ * CF_PAGES y Workers Builds define WORKERS_CI; este proyecto despliega a Workers, así
+ * que hay que mirar las dos. Si alguien deja la variable puesta en el panel por error,
+ * el build falla en vez de publicar contenido de ejemplo con el dominio real.
  */
 function usarContenidoLocal(): boolean {
   const pedido = leerEnv('USAR_CONTENIDO_LOCAL') === '1';
   if (!pedido) return false;
 
-  if (leerEnv('CF_PAGES')) {
+  const constructorRemoto = leerEnv('CF_PAGES') ? 'Cloudflare Pages' : leerEnv('WORKERS_CI') ? 'Workers Builds' : null;
+  if (constructorRemoto) {
     throw new Error(
-      'USAR_CONTENIDO_LOCAL=1 está activo en un build de Cloudflare Pages. Eso publicaría ' +
+      `USAR_CONTENIDO_LOCAL=1 está activo en un build de ${constructorRemoto}. Eso publicaría ` +
         'contenido de ejemplo en producción. Quita la variable del panel de Cloudflare.'
     );
   }

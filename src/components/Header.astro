@@ -8,10 +8,15 @@ const esActiva = (href: string) =>
 
 <header class="sticky top-0 z-40 border-b border-brand-gray/20 bg-brand-black text-brand-white">
   <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-    <a href="/" class="flex items-baseline gap-2" aria-label="EBDesing — inicio">
+    {/* Nada de aria-label aquí: sustituiría el nombre accesible por uno que no contiene
+        el texto visible, y quien usa control por voz dice lo que ve ("3B Designs") sin
+        que pase nada (WCAG 2.5.3). El destino se añade como texto solo para lectores,
+        así el nombre queda "3BDesigns, inicio" y sigue conteniendo lo visible. */}
+    <a href="/" class="flex items-baseline gap-2">
       <span class="font-display text-xl font-bold tracking-tight">
         3B<span class="text-brand-gold">Designs</span>
       </span>
+      <span class="sr-only">, inicio</span>
     </a>
 
     {/* Nav de escritorio */}

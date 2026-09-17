@@ -15,7 +15,11 @@ const VALORES: Record<string, string | undefined> = {
   SANITY_DATASET: import.meta.env.SANITY_DATASET,
   SANITY_API_VERSION: import.meta.env.SANITY_API_VERSION,
   USAR_CONTENIDO_LOCAL: import.meta.env.USAR_CONTENIDO_LOCAL,
+  // Marcadores de "esto lo está construyendo Cloudflare para desplegarlo":
+  // CF_PAGES lo pone Cloudflare Pages; WORKERS_CI, Workers Builds. Este proyecto
+  // despliega a Workers, así que mirar solo CF_PAGES dejaba el freno sin efecto.
   CF_PAGES: import.meta.env.CF_PAGES,
+  WORKERS_CI: import.meta.env.WORKERS_CI,
 };
 
 export function leerEnv(nombre: string): string | undefined {

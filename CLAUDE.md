@@ -63,6 +63,10 @@ commits y copy del sitio en español.
   las sesiones de Claude Code en web bloquea `github.com`/`codeload.github.com`, y ese comando
   descarga la plantilla desde ahí. El resultado es equivalente a la plantilla `minimal`.
 - **Aún sin instalar**: `wrangler` como dependencia directa (paso 14); el adaptador ya lo trae.
+- **⚠ Se despliega a Cloudflare WORKERS, no a Pages.** El blueprint §12 dice Pages, pero
+  `@astrojs/cloudflare` 14.x genera un `wrangler.json` de Workers con Static Assets
+  (`assets.directory: ../client`). Esto cambia el paso 14: no hay "Deploy Hook de Pages" para el
+  webhook de Sanity, y la variable de entorno del build es `WORKERS_CI`, no `CF_PAGES`.
 - **El formulario NO es una isla de React.** §3 del blueprint dibuja
   `islands/FormularioCotizacion.tsx` con `client:load`, pero §6 recomienda un componente Astro
   con `<script>` inline para no traer React por un solo formulario. Se siguió §6.
@@ -72,7 +76,7 @@ commits y copy del sitio en español.
   así que `src/lib/imagenes.ts` las arma a mano y nos ahorramos la dependencia.
 
 ## Estado actual
-Pasos 1-9, 11 y 12 del BUILD ORDER completos. Faltan 10, 13 y 14.
+Pasos 1-9 y 11-13 del BUILD ORDER completos. Faltan **10** (`llms.txt`, se saltó) y 14 (deploy).
 
 ### Cómo fluye el contenido
 ```
@@ -111,6 +115,7 @@ npm run auditar-seo    # la auditoría suelta, sobre dist/
 npm run auditar-activos # peso de imágenes y fuentes propias (también en postbuild)
 npm run pruebas        # suite E2E + accesibilidad (Playwright). Construye y sirve sola.
 npm run typecheck      # tsc --noEmit. El build NO comprueba tipos: córrelo aparte.
+npm run lighthouse     # levanta el preview antes. URL_BASE=https://... para producción
 npm run marcadores     # bloqueantes y recordatorios antes del deploy
 npm run generar-og     # regenera public/og/*.png (necesita: npx playwright install chromium)
 ```
@@ -214,7 +219,25 @@ que no llega ni al 3:1 de texto grande. Y hay **dos grises**:
 
 Intercambiarlos rompe AA y el escaneo de axe lo detecta. `/components-preview` lo muestra.
 
-Siguiente: paso 10, superficie para answer-engines (`llms.txt`).
+**Nombre accesible = texto visible.** No pongas un `aria-label` que sustituya el texto que se ve:
+quien usa control por voz dice lo que lee. El logo lo hacía ("3BDesigns" a la vista, "EBDesing —
+inicio" como nombre) y rompía WCAG 2.5.3. Para añadir contexto, mete un `<span class="sr-only">`
+dentro del control en vez de un `aria-label`. La regla `label-content-name-mismatch` de axe está
+**apagada por defecto**: `pruebas/accesibilidad.spec.ts` la enciende a mano.
+
+### Lighthouse (paso 13)
+`npm run lighthouse` con el preview levantado. 100 en las cuatro categorías, en Home, portafolio
+y ficha de proyecto, con cero auditorías fallando por debajo.
+
+- **SEO, accesibilidad y buenas prácticas bloquean siempre**: son propiedades del HTML y dan lo
+  mismo dónde se midan.
+- **El rendimiento NO bloquea contra localhost** y es orientativo: sin red real, sin CDN y —hoy—
+  sin imágenes reales de Sanity, el número no representa lo que verá un visitante. Contra el
+  dominio de producción (`URL_BASE=https://…`) sí bloquea.
+- Un score de 100 **puede esconder auditorías fallando**: `label-content-name-mismatch` pesa 0 y
+  aun así señalaba un bug real. Mira siempre la lista de auditorías, no solo el número.
+
+Siguiente: paso 10, superficie para answer-engines (`llms.txt`) — se saltó en su momento.
 
 ### Medido, no supuesto
 Última verificación en navegador con throttling móvil: CLS entre 0.0007 y 0.009 en Home, Servicios,

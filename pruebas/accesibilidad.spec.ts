@@ -19,6 +19,11 @@ const GRAVEDADES_QUE_FALLAN = ['critical', 'serious'];
 const escanear = (page: Page) =>
   new AxeBuilder({ page: page as unknown as ConstructorParameters<typeof AxeBuilder>[0]['page'] })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+    // axe marca esta regla como experimental y la deja apagada por defecto. Comprueba
+    // que el nombre accesible de un control contenga su texto visible (WCAG 2.5.3):
+    // sin eso, quien usa control por voz dice lo que ve y no pasa nada. La detectó
+    // Lighthouse, no este escaneo, así que se activa a mano.
+    .options({ rules: { 'label-content-name-mismatch': { enabled: true } } })
     .analyze();
 
 const resumir = (violaciones: Array<{ id: string; impact?: string | null; description: string; nodes: unknown[] }>) =>
