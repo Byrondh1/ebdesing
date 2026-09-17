@@ -1,7 +1,7 @@
 # EBDesing — Sitio Web
 
 Sitio de marketing para EBDesing (agencia de diseño y publicidad, Ecuador). Astro + Tailwind 4 +
-Sanity CMS + Cloudflare Pages. Ver `ebdesing-blueprint.md` en la raíz para el diseño completo,
+Sanity CMS + **Cloudflare Workers** (el blueprint dice Pages; ver Divergencias). Ver `ebdesing-blueprint.md` en la raíz para el diseño completo,
 orden de construcción y criterios de aceptación de cada paso — es la fuente de verdad.
 
 ## Reglas del proyecto
@@ -44,7 +44,7 @@ cd studio && npm install && npm run dev   # Sanity Studio → localhost:3333
 | | Dónde | Cuáles | Se leen con |
 |---|---|---|---|
 | **Build** | `.env` (ver `.env.example`) | `SANITY_*`, `USAR_CONTENIDO_LOCAL` | `leerEnv()` de `src/lib/env.ts` |
-| **Runtime del worker** | `.dev.vars` en local, panel de Cloudflare en producción | `RESEND_API_KEY`, `CONTACT_EMAIL`, `COTIZACION_SIMULADA` | `import { env } from 'cloudflare:workers'` |
+| **Runtime del worker** | `.dev.vars` en local, `wrangler secret put` en producción | `RESEND_API_KEY`, `CONTACT_EMAIL`, `COTIZACION_SIMULADA` | `import { env } from 'cloudflare:workers'` |
 
 Poner una de runtime en `.env` **no hace nada**: el endpoint no la ve. Y al revés igual.
 `.dev.vars` está en `.gitignore` — nunca lo commitees, lleva la clave de Resend.
@@ -76,7 +76,7 @@ commits y copy del sitio en español.
   así que `src/lib/imagenes.ts` las arma a mano y nos ahorramos la dependencia.
 
 ## Estado actual
-Pasos 1-9 y 11-13 del BUILD ORDER completos. Faltan **10** (`llms.txt`, se saltó) y 14 (deploy).
+Pasos 1-13 del BUILD ORDER completos. Falta el **14** (deploy). Ver `docs/despliegue.md`.
 
 ### Cómo fluye el contenido
 ```
@@ -96,7 +96,8 @@ USAR_CONTENIDO_LOCAL=1 npm run build   # contenido de ejemplo, NO sirve para pub
 ```
 Es opt-in a propósito: por defecto el build **falla** si no puede hablar con Sanity — mejor un
 deploy roto que uno que publica en silencio un portafolio vacío. Además se niega a arrancar si
-detecta `CF_PAGES`, para que la variable no se cuele en el panel de Cloudflare.
+detecta que quien construye es Cloudflare (`CF_PAGES` en Pages, **`WORKERS_CI` en Workers**, que
+es lo que usa este proyecto), para que la variable no se cuele en el panel.
 
 ### Studio
 `studio/` es un proyecto npm aparte, con su propio `npm install` y su propio `.env`
@@ -170,7 +171,8 @@ en navegador. `@font-face` en `global.css` con `font-display: swap` y preload en
 - El honeypot relleno devuelve **200 sin enviar**: decirle al bot que falló solo le enseña.
 - Si Resend falla, 502 y el formulario ofrece WhatsApp — no se pierde el contacto.
 - `COTIZACION_SIMULADA=1` registra el correo en consola en vez de enviarlo. Se niega a
-  activarse si detecta `CF_PAGES`, igual que el contenido local.
+  activarse si detecta `CF_PAGES` o **`WORKERS_CI`**, igual que el contenido local. Mirar solo
+  `CF_PAGES` dejaba el freno sin efecto: este proyecto despliega a Workers, no a Pages.
 
 ### Trampas del adaptador de Cloudflare (costaron tiempo, no las repitas)
 - **`Astro.locals.runtime.env` ya no existe** en Astro 7 + adaptador 14. Es
@@ -237,7 +239,24 @@ y ficha de proyecto, con cero auditorías fallando por debajo.
 - Un score de 100 **puede esconder auditorías fallando**: `label-content-name-mismatch` pesa 0 y
   aun así señalaba un bug real. Mira siempre la lista de auditorías, no solo el número.
 
-Siguiente: paso 10, superficie para answer-engines (`llms.txt`) — se saltó en su momento.
+### Superficie para motores de respuesta (paso 10)
+`src/pages/llms.txt.ts` **genera** el archivo desde el contenido, no lo escribe a mano: las URLs
+salen del dominio de `astro.config.mjs` y los servicios y proyectos de Sanity. Uno estático
+empezaría a listar proyectos borrados en cuanto EBDesing editara el portafolio, y el "Done when"
+del paso es justamente que cada URL listada responda 200. La suite lo comprueba.
+
+Cada página clave abre con un párrafo de 2-3 frases que se sostiene si un motor lo cita suelto.
+Hay una prueba por página que falla si alguien lo recorta a una frase.
+
+### Despliegue (paso 14, pendiente)
+Todo en **`docs/despliegue.md`**. Lo esencial:
+- Despliega **GitHub Actions**, no Workers Builds: un solo dueño. Si conectas Workers Builds desde
+  el panel, desconecta `.github/workflows/desplegar.yml` o habrá dos despliegues por push.
+- El webhook de Sanity de §12 **no puede usar un Deploy Hook de Pages** (no existe en Workers):
+  llama a `repository_dispatch` de la API de GitHub, que dispara el workflow.
+- `RESEND_API_KEY` y `CONTACT_EMAIL` van como **secretos del worker** (`wrangler secret put`), no
+  como `vars`: el `wrangler.json` generado declara `"vars": {}` y es la fuente de verdad en cada
+  despliegue.
 
 ### Medido, no supuesto
 Última verificación en navegador con throttling móvil: CLS entre 0.0007 y 0.009 en Home, Servicios,

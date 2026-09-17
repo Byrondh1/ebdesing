@@ -61,3 +61,61 @@ test.describe('Navegación', () => {
     }
   });
 });
+
+/**
+ * Superficie para motores de respuesta (paso 10 del BUILD ORDER).
+ *
+ * El "Done when" es literal: llms.txt responde 200 y CADA URL que lista también.
+ * Por eso se genera desde el contenido y no se escribe a mano — un archivo estático
+ * empezaría a listar proyectos borrados en cuanto EBDesing editara el portafolio.
+ */
+test.describe('llms.txt', () => {
+  test('responde 200 y todas las URLs que lista también', async ({ request }) => {
+    const respuesta = await request.get('/llms.txt');
+    expect(respuesta.status()).toBe(200);
+    expect(respuesta.headers()['content-type']).toContain('text/plain');
+
+    const cuerpo = await respuesta.text();
+    const urls = [...cuerpo.matchAll(/\((https?:\/\/[^)]+)\)/g)].map((m) => m[1]);
+    expect(urls.length, 'llms.txt debería listar enlaces').toBeGreaterThan(0);
+
+    for (const url of urls) {
+      // El archivo lleva el dominio de producción; se prueba contra el servidor local.
+      const ruta = new URL(url).pathname;
+      const r = await request.get(ruta);
+      expect(r.status(), `${ruta} (listada en llms.txt) debería responder 200`).toBe(200);
+    }
+  });
+
+  test('empieza con un resumen citable, no con una lista de enlaces', async ({ request }) => {
+    const cuerpo = await (await request.get('/llms.txt')).text();
+    const resumen = cuerpo
+      .split('\n')
+      .filter((l) => l.startsWith('> '))
+      .join(' ')
+      .replace(/^> /gm, '');
+
+    expect(resumen.length, 'el resumen debería tener sustancia').toBeGreaterThan(150);
+    expect(resumen).toMatch(/Ecuador/);
+  });
+});
+
+test.describe('Párrafo citable', () => {
+  // Cada página clave debe abrir con 2-3 frases que se sostengan solas si un motor
+  // de respuesta las cita sin el resto de la página.
+  for (const ruta of rutasDelNav) {
+    test(`${ruta} abre con un párrafo con sustancia`, async ({ page }) => {
+      await page.goto(ruta);
+      const parrafo = await page.evaluate(() => {
+        const h1 = document.querySelector('h1');
+        let nodo = h1?.nextElementSibling ?? null;
+        while (nodo && nodo.tagName !== 'P') nodo = nodo.nextElementSibling;
+        return nodo?.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+      });
+
+      expect(parrafo.length, `${ruta}: "${parrafo}"`).toBeGreaterThan(80);
+      const frases = parrafo.split(/[.!?]\s/).filter((f) => f.trim().length > 10);
+      expect(frases.length, `${ruta} debería abrir con al menos 2 frases`).toBeGreaterThanOrEqual(2);
+    });
+  }
+});
