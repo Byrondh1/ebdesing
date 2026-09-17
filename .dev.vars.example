@@ -1,0 +1,15 @@
+# Copia este archivo a .dev.vars — NO se commitea.
+#
+# Ojo: estas son variables de RUNTIME del worker de Cloudflare, y NO se leen de .env
+# ni del shell. Van aquí porque es la convención de wrangler, y el endpoint las lee
+# con `import { env } from "cloudflare:workers"`.
+#
+# En producción se configuran en el panel de Cloudflare Pages, no en un archivo.
+
+RESEND_API_KEY=
+CONTACT_EMAIL=
+
+# Opcional, solo desarrollo: registra la cotización en consola en vez de enviarla,
+# para probar el formulario sin cuenta de Resend. El endpoint se niega a usarlo si
+# detecta CF_PAGES.
+# COTIZACION_SIMULADA=1

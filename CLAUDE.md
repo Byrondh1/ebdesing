@@ -39,9 +39,18 @@ npm run build                             # debe salir con código 0
 cd studio && npm install && npm run dev   # Sanity Studio → localhost:3333
 ```
 
-## Secretos
-Van como variables de entorno (Cloudflare Pages en producción, `.env` local que NO se commitea).
-Ver `.env.example`. Nunca hardcodear `RESEND_API_KEY` ni el project id de Sanity en el código.
+## Secretos — hay DOS clases de variables, y no se mezclan
+
+| | Dónde | Cuáles | Se leen con |
+|---|---|---|---|
+| **Build** | `.env` (ver `.env.example`) | `SANITY_*`, `USAR_CONTENIDO_LOCAL` | `leerEnv()` de `src/lib/env.ts` |
+| **Runtime del worker** | `.dev.vars` en local, panel de Cloudflare en producción | `RESEND_API_KEY`, `CONTACT_EMAIL`, `COTIZACION_SIMULADA` | `import { env } from 'cloudflare:workers'` |
+
+Poner una de runtime en `.env` **no hace nada**: el endpoint no la ve. Y al revés igual.
+`.dev.vars` está en `.gitignore` — nunca lo commitees, lleva la clave de Resend.
+
+`astro dev` lee `.dev.vars` de la raíz; `astro preview` levanta wrangler, que lo busca en
+`dist/server/`. El script `prepreview` lo copia solo, así que `npm run preview` ya funciona.
 
 ## Idioma
 El proyecto y su contenido son en español (mercado: Ecuador). Escribe código, comentarios,
@@ -53,13 +62,17 @@ commits y copy del sitio en español.
 - **Scaffold:** se creó a mano, no con `npm create astro@latest`. La política de egress de
   las sesiones de Claude Code en web bloquea `github.com`/`codeload.github.com`, y ese comando
   descarga la plantilla desde ahí. El resultado es equivalente a la plantilla `minimal`.
-- **Aún sin instalar** (llegan en su paso del BUILD ORDER): `@astrojs/cloudflare` y `resend`
-  (paso 8), `wrangler` (paso 14).
+- **Aún sin instalar**: `wrangler` como dependencia directa (paso 14); el adaptador ya lo trae.
+- **El formulario NO es una isla de React.** §3 del blueprint dibuja
+  `islands/FormularioCotizacion.tsx` con `client:load`, pero §6 recomienda un componente Astro
+  con `<script>` inline para no traer React por un solo formulario. Se siguió §6.
+- **`zod` añadido** (no está en §11): valida el endpoint en servidor. Solo servidor — en el
+  navegador la validación es nativa, para no enviar zod al cliente.
 - **@sanity/image-url no se usa:** la CDN de Sanity acepta transformaciones por query string,
   así que `src/lib/imagenes.ts` las arma a mano y nos ahorramos la dependencia.
 
 ## Estado actual
-Pasos 1-7 y 9 del BUILD ORDER completos. Faltan el 8 (formulario) y el 10-14.
+Pasos 1-9 del BUILD ORDER completos. Faltan 10-14.
 
 ### Cómo fluye el contenido
 ```
@@ -123,4 +136,26 @@ con preload es el paso 11. Hasta entonces las tarjetas OG y el sitio no comparte
 - Un `export ... from './sanity'` carga ese módulo (y su `throw`) aunque no se use el símbolo:
   por eso `recortar` vive en `imagenes.ts`.
 
-Siguiente: paso 8, formulario de cotización con `@astrojs/cloudflare` y Resend.
+### Formulario de cotización (paso 8)
+- `/api/cotizacion` es la **única** ruta con `export const prerender = false`. Todo lo demás
+  se prerenderiza; el adaptador está solo para poder ejecutar esa ruta en el edge.
+- Validación en dos capas: nativa del navegador antes de tocar la red (un campo obligatorio
+  vacío no genera petición) y zod en el servidor, que es la que manda.
+- El honeypot relleno devuelve **200 sin enviar**: decirle al bot que falló solo le enseña.
+- Si Resend falla, 502 y el formulario ofrece WhatsApp — no se pierde el contacto.
+- `COTIZACION_SIMULADA=1` registra el correo en consola en vez de enviarlo. Se niega a
+  activarse si detecta `CF_PAGES`, igual que el contenido local.
+
+### Trampas del adaptador de Cloudflare (costaron tiempo, no las repitas)
+- **`Astro.locals.runtime.env` ya no existe** en Astro 7 + adaptador 14. Es
+  `import { env } from 'cloudflare:workers'`. Acceder al viejo lanza, y si lo haces dentro de
+  un `try` de envío se disfraza de 502 y parece que falló Resend.
+- **`import.meta.env[nombre]` con nombre dinámico NUNCA funciona.** Vite sustituye texto, no
+  hace lookup. Y el prerender corre en un sandbox Miniflare sin `process.env`. Por eso las
+  variables de build se inyectan una a una vía `vite.define` en `astro.config.mjs` y se leen
+  con accesos estáticos en `env.ts`. Para añadir una: en los dos sitios.
+- **Con adaptador, `dist/` se parte** en `dist/client/` (estáticos) y `dist/server/` (worker).
+  La auditoría SEO detecta cuál usar.
+- Wrangler redirige `/ruta` a `/ruta/` con un **307**. Es normal y concuerda con los canonical.
+
+Siguiente: paso 10, superficie para answer-engines (`llms.txt`).

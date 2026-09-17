@@ -6,11 +6,19 @@
  *   node scripts/auditar-seo.mjs
  */
 import { readFile, readdir, access } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, relative } from 'node:path';
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
-const dist = join(raiz, 'dist');
+
+/**
+ * Con un adaptador, Astro parte la salida: los estáticos van a dist/client/ y el
+ * worker a dist/server/. Sin adaptador todo cuelga de dist/. Se detecta cuál es.
+ */
+const dist = existsSync(join(raiz, 'dist', 'client'))
+  ? join(raiz, 'dist', 'client')
+  : join(raiz, 'dist');
 
 const problemas = [];
 const avisos = [];

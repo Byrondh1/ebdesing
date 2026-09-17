@@ -5,6 +5,9 @@
  * así el deploy en Cloudflare no depende de un navegador headless ni de qué fuentes
  * tenga la máquina que construye.
  *
+ * A propósito NO imprimen el dominio: todavía no está confirmado y un PNG con el
+ * dominio equivocado es más difícil de detectar que una línea de configuración.
+ *
  * Regenerar cuando cambien los títulos de scripts/og.config.mjs o los colores de marca:
  *   npx playwright install chromium   # solo la primera vez
  *   node scripts/generar-og.mjs
@@ -50,7 +53,7 @@ const plantilla = (pagina, archivoDisplay, archivoBody) => `
   <h1>${pagina.titulo}</h1>
   <footer>
     <p class="marca">3B<span>Designs</span></p>
-    <p class="dominio">ebdesing.com</p>
+    <p class="dominio">Agencia de Diseño y Publicidad</p>
   </footer>
 </body></html>`;
 

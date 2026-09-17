@@ -23,12 +23,12 @@ const recordatorios = [];
 const config = await leer('astro.config.mjs');
 
 // --- dominio ---
-const sitio = config.match(/const SITIO = '([^']+)'/)?.[1];
+const sitio = config.match(/const DOMINIO_PROVISIONAL = '([^']+)'/)?.[1];
 if (sitio === 'https://ebdesing.com')
   bloqueantes.push([
     'Dominio sin confirmar',
-    `sigue en ${sitio} — de él dependen canonical, sitemap, JSON-LD y el pie de las imágenes OG`,
-    'astro.config.mjs · si cambia, corre también: npm run generar-og',
+    `provisional ${sitio} — de él dependen canonical, sitemap, robots.txt y JSON-LD`,
+    'astro.config.mjs · EBDesing aún no lo ha decidido',
   ]);
 
 // --- página de desarrollo ---

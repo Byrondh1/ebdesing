@@ -14,6 +14,11 @@ dist/
 .env.*
 !.env.example
 
+# secretos de runtime del worker de Cloudflare (convención de wrangler)
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+
 # sistema / editor
 .DS_Store
 Thumbs.db

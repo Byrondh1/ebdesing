@@ -1,19 +1,21 @@
 ---
-/**
- * PASO 8 del BUILD ORDER añade aquí la isla `FormularioCotizacion` y el endpoint
- * `/api/cotizacion`. Los canales directos (email y WhatsApp) ya funcionan.
- */
 import Base from '../layouts/Base.astro';
 import Button from '../components/ui/Button.astro';
-import { obtenerConfiguracion, enlaceWhatsapp } from '../lib/contenido';
+import FormularioCotizacion from '../components/sections/FormularioCotizacion.astro';
+import { obtenerConfiguracion, obtenerServicios, enlaceWhatsapp } from '../lib/contenido';
 import { migas } from '../lib/seo';
 
-const { emailContacto, direccion, telefonoWhatsapp } = await obtenerConfiguracion();
+const [{ emailContacto, direccion, telefonoWhatsapp }, servicios] = await Promise.all([
+  obtenerConfiguracion(),
+  obtenerServicios(),
+]);
+
+const whatsapp = enlaceWhatsapp(telefonoWhatsapp);
 ---
 
 <Base
   titulo="Contacto"
-  descripcion="Pide tu cotización a EBDesing por WhatsApp o correo. Diseño y publicidad en Ecuador."
+  descripcion="Pide tu cotización a EBDesing por formulario o WhatsApp. Diseño y publicidad en Ecuador."
   ogImagen="/og/contacto.png"
   jsonLd={[migas([{ nombre: 'Contacto', href: '/contacto' }], Astro.site)]}
 >
@@ -26,16 +28,26 @@ const { emailContacto, direccion, telefonoWhatsapp } = await obtenerConfiguracio
     </div>
   </section>
 
-  <section class="py-20 sm:py-24">
-    <div class="mx-auto grid max-w-6xl gap-12 px-4 sm:px-6 md:grid-cols-2">
-      <div>
-        <h2 class="font-display text-2xl font-bold">Escríbenos directo</h2>
+  <section class="py-16 sm:py-20">
+    <div class="mx-auto grid max-w-6xl gap-12 px-4 sm:px-6 md:grid-cols-5">
+      <div class="md:col-span-3">
+        <h2 class="font-display text-2xl font-bold">Pide tu cotización</h2>
+        <p class="mt-2 text-brand-gray">
+          Los campos con <span aria-hidden="true">*</span> son obligatorios.
+        </p>
+        <div class="mt-8">
+          <FormularioCotizacion servicios={servicios} enlaceWhatsapp={whatsapp} />
+        </div>
+      </div>
+
+      <div class="md:col-span-2">
+        <h2 class="font-display text-2xl font-bold">O escríbenos directo</h2>
         <p class="mt-3 text-brand-gray">
           Si prefieres hablar antes de llenar nada, estos son los canales rápidos.
         </p>
 
-        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-          <Button href={enlaceWhatsapp(telefonoWhatsapp)}>WhatsApp</Button>
+        <div class="mt-6 flex flex-col gap-3">
+          <Button href={whatsapp}>WhatsApp</Button>
           <Button href={`mailto:${emailContacto}`} variante="contorno">Correo</Button>
         </div>
 
@@ -43,7 +55,10 @@ const { emailContacto, direccion, telefonoWhatsapp } = await obtenerConfiguracio
           <div>
             <dt class="font-display tracking-widest text-brand-gray uppercase">Correo</dt>
             <dd class="mt-1">
-              <a href={`mailto:${emailContacto}`} class="rounded hover:text-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold">
+              <a
+                href={`mailto:${emailContacto}`}
+                class="rounded hover:text-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
+              >
                 {emailContacto}
               </a>
             </dd>
@@ -53,14 +68,6 @@ const { emailContacto, direccion, telefonoWhatsapp } = await obtenerConfiguracio
             <dd class="mt-1">{direccion}</dd>
           </div>
         </dl>
-      </div>
-
-      <div class="rounded-lg border border-dashed border-brand-gray/40 p-8">
-        <h2 class="font-display text-2xl font-bold">Formulario de cotización</h2>
-        <p class="mt-3 text-brand-gray">
-          Se construye en el paso 8 del BUILD ORDER, junto con el endpoint que manda el correo.
-          Mientras tanto, usa WhatsApp o el correo de arriba.
-        </p>
       </div>
     </div>
   </section>
