@@ -5,16 +5,15 @@ import Servicios from '../components/sections/Servicios.astro';
 import Proyectos from '../components/sections/Proyectos.astro';
 import Testimonios from '../components/sections/Testimonios.astro';
 import CTA from '../components/sections/CTA.astro';
-import {
-  serviciosOrdenados,
-  proyectosDestacados,
-  testimonios,
-} from '../lib/contenido-temporal';
+import { serviciosOrdenados, proyectosDestacados, testimonios } from '../lib/contenido-temporal';
+import { listaDeServicios } from '../lib/seo';
 ---
 
 <Base
   titulo="Agencia de Diseño y Publicidad"
   descripcion="EBDesing diseña identidad de marca, campañas publicitarias y gran formato en Ecuador. Pide tu cotización por WhatsApp o formulario."
+  ogImagen="/og/inicio.png"
+  jsonLd={[listaDeServicios(serviciosOrdenados, Astro.site)]}
 >
   <Hero />
   <Servicios servicios={serviciosOrdenados} />

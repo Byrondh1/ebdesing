@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import CTA from '../components/sections/CTA.astro';
+import { migas } from '../lib/seo';
 
 const valores = [
   {
@@ -24,6 +25,8 @@ const valores = [
 <Base
   titulo="Sobre nosotros"
   descripcion="EBDesing es una agencia de diseño y publicidad en Ecuador. Marca, campañas y gran formato, con plazos que se cumplen."
+  ogImagen="/og/sobre-nosotros.png"
+  jsonLd={[migas([{ nombre: 'Sobre nosotros', href: '/sobre-nosotros' }], Astro.site)]}
 >
   <section class="bg-brand-black py-16 text-brand-white sm:py-20">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">

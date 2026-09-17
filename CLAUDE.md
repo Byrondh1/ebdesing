@@ -22,6 +22,7 @@ No cambies versiones a ciegas; están verificadas contra npm el 2026-09-17.
 | `astro` | 7.3.3 (requiere Node >= 22.12.0) |
 | `@astrojs/cloudflare` | 14.3.2 |
 | `tailwindcss` + `@tailwindcss/vite` | 4.3.3 |
+| `@astrojs/sitemap` | 3.7.4 (añadido en el paso 9; no está en §11 del blueprint) |
 | `@sanity/client` | 8.6.2 |
 | `resend` | 6.28.1 |
 | `typescript` | `~6.0.3` (NO 7.x — ver Gotchas §2) |
@@ -56,28 +57,46 @@ commits y copy del sitio en español.
   (paso 8), `@sanity/client` (paso 6), `wrangler` (paso 14).
 
 ## Estado actual
-Pasos 1-5 del BUILD ORDER completos. `npm run build` en 0, 7 páginas.
+Pasos 1-5 y 9 del BUILD ORDER completos. `npm run build` en 0, 7 páginas.
 
-- **Layout:** `Base.astro` recibe `titulo`/`descripcion`/`ogImagen`/`noindex` y arma head, OG,
-  canonical y skip-link. `Header` y `Footer` leen la nav de `src/lib/nav.ts` — fuente única.
+- **Layout:** `Base.astro` recibe `titulo`/`descripcion`/`ogImagen`/`noindex`/`jsonLd` y arma head,
+  OG, Twitter, canonical, JSON-LD y skip-link. `Header` y `Footer` leen la nav de `src/lib/nav.ts`.
 - **Sistema de diseño:** `Button` (primario/secundario/contorno × sm/md/lg), `Badge`, `Card`.
-- **Páginas:** Home (Hero, Servicios, Proyectos, Testimonios, CTA), Servicios, Sobre nosotros,
-  404 propio, y maquetas de Portafolio y Contacto.
+- **Páginas:** Home, Servicios, Sobre nosotros, 404 propio, y maquetas de Portafolio y Contacto.
+- **SEO (paso 9):** sitemap con `/components-preview` y `/404` excluidas, `robots.txt`, JSON-LD
+  (`Organization`, `WebSite`, `ItemList` de `Service`, `BreadcrumbList`) e imagen OG propia por página.
+
+## Comandos propios
+```bash
+npm run build          # incluye postbuild: auditoría SEO que ROMPE el build si algo falla
+npm run auditar-seo    # la auditoría suelta, sobre dist/
+npm run marcadores     # lista lo que falta reemplazar antes del deploy (sale 1 si queda algo)
+npm run generar-og     # regenera public/og/*.png (necesita: npx playwright install chromium)
+```
+
+### Reglas de datos estructurados
+Un dato estructurado falso es peor que uno ausente. `seo.ts` **omite** el teléfono mientras sea
+`TELEFONO_MARCADOR` y omite de `sameAs` las URLs de redes que apuntan a la portada de la plataforma
+en vez de a un perfil. Al poner los datos reales aparecen solos; no hay que tocar `seo.ts`.
+
+### Imágenes OG
+Los PNG de `public/og/` se **commitean**: son artefactos, no se generan en cada build, para que el
+deploy no dependa de un navegador headless ni de las fuentes de la máquina que construye. Si cambian
+los títulos de `scripts/og.config.mjs`, los colores de marca **o el dominio**, hay que regenerarlos.
 
 ### Temporal, se borra o se reemplaza
-- `src/pages/components-preview.astro` — **bórrala antes del deploy** (paso 3).
-- `src/lib/contenido-temporal.ts` — datos con la forma exacta de los schemas de Sanity §4.
-  Los componentes reciben todo por props, así que el paso 6 solo cambia de dónde salen los datos;
-  las secciones no se tocan.
-- `/portafolio` y `/contacto` son maquetas: les falta el fetch a Sanity (paso 7) y el formulario
-  con su endpoint (paso 8).
-- `site` en `astro.config.mjs` y los datos de `configuracionSitio` son marcadores: hay que poner
-  el dominio, teléfono, correo y redes reales.
+Corre `npm run marcadores` para la lista viva. En resumen: dominio, WhatsApp, correo, dirección,
+redes, logo del JSON-LD, `/components-preview` y el módulo `contenido-temporal.ts`.
+
+### Ojo con las fuentes
+`public/fonts/` ya tiene Archivo Black e Inter (variable, un solo archivo cubre todos los pesos),
+pero **solo las usa el generador de OG**. El sitio aún cae a las fuentes del sistema: el `@font-face`
+con preload es el paso 11. Hasta entonces las tarjetas OG y el sitio no se ven con la misma tipografía.
 
 ### Trampas encontradas (no las repitas)
-- Astro **colapsa el salto de línea que precede a un `<span>`** y se come el espacio entre
-  palabras. Texto y spans en la misma línea.
+- Astro **colapsa el salto de línea que precede a un `<span>`** y se come el espacio entre palabras.
 - Los comentarios `<!-- -->` en plantillas .astro **se envían al navegador**. Usa `{/* */}`.
 - Un hijo de contenedor flex se estira por `align-items: stretch`: `Badge` lleva `w-fit self-start`.
+- Inter en Google Fonts v20 es variable: los "distintos pesos" descargan el mismo archivo.
 
 Siguiente: paso 6, integración con Sanity (requiere el project ID de Byron).

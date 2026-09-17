@@ -8,6 +8,7 @@ import Base from '../layouts/Base.astro';
 import Proyectos from '../components/sections/Proyectos.astro';
 import CTA from '../components/sections/CTA.astro';
 import { proyectos } from '../lib/contenido-temporal';
+import { migas } from '../lib/seo';
 
 const ordenados = [...proyectos].sort((a, b) => a.orden - b.orden);
 ---
@@ -15,6 +16,8 @@ const ordenados = [...proyectos].sort((a, b) => a.orden - b.orden);
 <Base
   titulo="Portafolio"
   descripcion="Proyectos de branding, publicidad y gran formato entregados por EBDesing en Ecuador."
+  ogImagen="/og/portafolio.png"
+  jsonLd={[migas([{ nombre: 'Portafolio', href: '/portafolio' }], Astro.site)]}
 >
   <section class="bg-brand-black pt-16 text-brand-white sm:pt-20">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">

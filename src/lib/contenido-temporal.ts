@@ -48,6 +48,12 @@ export interface Testimonio {
   cita: string;
 }
 
+/**
+ * Valor centinela del teléfono. Mientras siga siendo este, el JSON-LD lo omite en vez
+ * de publicar un número falso como dato estructurado.
+ */
+export const TELEFONO_MARCADOR = '593000000000';
+
 /** TODO(Byron): confirmar teléfono, email y dirección reales antes del deploy. */
 export const configuracionSitio: ConfiguracionSitio = {
   telefonoWhatsapp: '593000000000',

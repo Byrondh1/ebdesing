@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Página interna de desarrollo; se borra antes del deploy, pero por si acaso.
+Disallow: /components-preview
+
+Sitemap: https://ebdesing.com/sitemap-index.xml

@@ -3,11 +3,17 @@ import Base from '../layouts/Base.astro';
 import Servicios from '../components/sections/Servicios.astro';
 import CTA from '../components/sections/CTA.astro';
 import { serviciosOrdenados } from '../lib/contenido-temporal';
+import { listaDeServicios, migas } from '../lib/seo';
 ---
 
 <Base
   titulo="Servicios"
   descripcion="Identidad de marca, diseño publicitario, gran formato e impresión, y contenido para redes. Lo que hace EBDesing y cómo lo entrega."
+  ogImagen="/og/servicios.png"
+  jsonLd={[
+    listaDeServicios(serviciosOrdenados, Astro.site),
+    migas([{ nombre: 'Servicios', href: '/servicios' }], Astro.site),
+  ]}
 >
   <section class="bg-brand-black py-16 text-brand-white sm:py-20">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">

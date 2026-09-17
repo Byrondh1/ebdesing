@@ -6,6 +6,7 @@
 import Base from '../layouts/Base.astro';
 import Button from '../components/ui/Button.astro';
 import { configuracionSitio, enlaceWhatsapp } from '../lib/contenido-temporal';
+import { migas } from '../lib/seo';
 
 const { emailContacto, direccion } = configuracionSitio;
 ---
@@ -13,6 +14,8 @@ const { emailContacto, direccion } = configuracionSitio;
 <Base
   titulo="Contacto"
   descripcion="Pide tu cotización a EBDesing por WhatsApp o correo. Diseño y publicidad en Ecuador."
+  ogImagen="/og/contacto.png"
+  jsonLd={[migas([{ nombre: 'Contacto', href: '/contacto' }], Astro.site)]}
 >
   <section class="bg-brand-black py-16 text-brand-white sm:py-20">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
