@@ -1,0 +1,24 @@
+# dependencias
+node_modules/
+.pnpm-store/
+
+# build
+dist/
+.astro/
+.output/
+.vercel/
+.wrangler/
+
+# entorno — nunca commitear secretos
+.env
+.env.*
+!.env.example
+
+# sistema / editor
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+.vscode/*
+!.vscode/extensions.json
+.idea/
