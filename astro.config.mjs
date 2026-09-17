@@ -4,6 +4,7 @@ import { loadEnv } from 'vite';
 import cloudflare from '@astrojs/cloudflare';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
+import registrarSalida from './integraciones/registrar-salida.mjs';
 
 /**
  * ⚠ DOMINIO PROVISIONAL — EBDesing todavía no lo ha decidido (confirmado 2026-09-17).
@@ -62,6 +63,9 @@ export default defineConfig({
   output: 'static',
   adapter: cloudflare({ imageService: 'passthrough' }),
   integrations: [
+    // Deja el directorio real del build en .astro/salida-build.json para que las
+    // auditorías del postbuild no tengan que adivinarlo.
+    registrarSalida(),
     sitemap({
       filter: (pagina) =>
         !EXCLUIDAS.some((ruta) => pagina === `${DOMINIO_PROVISIONAL}${ruta}/` || pagina === `${DOMINIO_PROVISIONAL}${ruta}`),

@@ -26,6 +26,35 @@ misma versión.
 > Si en algún momento conectas Workers Builds desde el panel de Cloudflare, **desconecta este
 > workflow** o tendrás dos despliegues por cada push.
 
+## ⚠ Nunca ejecutes `wrangler deploy` a secas
+
+**Siempre con `--config dist/server/wrangler.json`.**
+
+Sin esa bandera, wrangler no encuentra configuración en la raíz y arranca su
+*auto-config*: te pregunta "Proceed with setup?", y si dices que sí **modifica el
+repositorio**. Concretamente:
+
+- corre `npx astro add cloudflare`, que reescribe `astro.config.mjs` para añadir el adaptador;
+- instala `wrangler` como dependencia;
+- edita tu `.gitignore`;
+- y después lanza `npm run build` como "custom build".
+
+Pasó de verdad: en un repositorio que iba retrasado respecto a `main` y todavía no tenía el
+adaptador, el auto-config se lo añadió. La salida pasó de ser plana (`dist/`) a estar partida
+(`dist/client/` y `dist/server/`), y la auditoría de esa copia antigua —que daba por hecho salida
+plana— reventó con catorce errores inventados: rutas con prefijo `/client/`, "no se generó
+sitemap-0.xml" y "robots.txt no existe". El sitio estaba bien; el script era viejo.
+
+Dos defensas desde entonces:
+
+1. El directorio del build **ya no se adivina**: la integración `registrar-salida` lo escribe en
+   `.astro/salida-build.json` y las auditorías lo leen de ahí. Si ese archivo falta, avisan en
+   voz alta antes de reportar nada.
+2. El workflow de despliegue siempre pasa `--config`, así que nunca dispara el auto-config.
+
+Si alguna vez ves ese diálogo de setup, **responde que no** y revisa `git status`: puede haberte
+cambiado `astro.config.mjs` y `.gitignore`.
+
 ## Configuración que hay que hacer una vez
 
 ### 1. En GitHub → Settings → Secrets and variables → Actions

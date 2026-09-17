@@ -183,7 +183,13 @@ en navegador. `@font-face` en `global.css` con `font-display: swap` y preload en
   variables de build se inyectan una a una vía `vite.define` en `astro.config.mjs` y se leen
   con accesos estáticos en `env.ts`. Para añadir una: en los dos sitios.
 - **Con adaptador, `dist/` se parte** en `dist/client/` (estáticos) y `dist/server/` (worker).
-  La auditoría SEO detecta cuál usar.
+  El directorio real lo registra la integración `registrar-salida` en `.astro/salida-build.json`
+  y las auditorías lo leen de ahí — **no lo adivinan**. Adivinarlo produce un fallo muy
+  reconocible: rutas con prefijo `/client/`, "no se generó sitemap-0.xml" y "robots.txt no existe",
+  las tres a la vez. Si ves eso, el build y el script no coinciden.
+- **`wrangler deploy` a secas dispara un auto-config** que corre `astro add cloudflare`, te toca
+  `astro.config.mjs` y `.gitignore`, y lanza `npm run build`. Pásale siempre
+  `--config dist/server/wrangler.json`. Ver `docs/despliegue.md`.
 - Wrangler redirige `/ruta` a `/ruta/` con un **307**. Es normal y concuerda con los canonical.
 
 ### Pruebas (paso 12)

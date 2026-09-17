@@ -7,14 +7,10 @@
  * se piden con `w` y `q` acotados desde `src/lib/imagenes.ts`.
  */
 import { readdir, stat } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join, relative, extname } from 'node:path';
+import { join, relative, extname } from 'node:path';
+import { directorioDeSalida } from './salida-build.mjs';
 
-const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
-const dist = existsSync(join(raiz, 'dist', 'client'))
-  ? join(raiz, 'dist', 'client')
-  : join(raiz, 'dist');
+const dist = directorioDeSalida();
 
 const LIMITE_IMAGEN = 200 * 1024;
 const LIMITE_FUENTE = 100 * 1024;
