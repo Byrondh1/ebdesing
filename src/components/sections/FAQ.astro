@@ -1,0 +1,46 @@
+---
+import type { PreguntaFrecuente } from '../../lib/tipos';
+
+/**
+ * Preguntas frecuentes.
+ *
+ * `<details>` nativo, cero JavaScript: se abre y cierra solo, es accesible por
+ * teclado de fábrica y el contenido está en el HTML aunque esté plegado — que es lo
+ * que permite que Google lo lea para los datos estructurados FAQPage.
+ */
+interface Props {
+  preguntas: PreguntaFrecuente[];
+}
+
+const { preguntas } = Astro.props;
+---
+
+{
+  preguntas.length > 0 && (
+    <section class="bg-brand-white py-20 sm:py-24">
+      <div class="mx-auto max-w-3xl px-4 sm:px-6">
+        <h2 class="font-display text-3xl font-bold sm:text-4xl">Preguntas frecuentes</h2>
+        <p class="mt-3 text-brand-gray">
+          Lo que más nos preguntan antes de empezar. Si te queda otra, escríbenos.
+        </p>
+
+        <div class="mt-10 divide-y divide-brand-gray/25 border-y border-brand-gray/25">
+          {preguntas.map((item) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 rounded font-display text-lg font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-gold">
+                {item.pregunta}
+                <span
+                  class="shrink-0 text-2xl text-brand-gold transition-transform group-open:rotate-45"
+                  aria-hidden="true"
+                >
+                  +
+                </span>
+              </summary>
+              <p class="mt-3 text-brand-gray">{item.respuesta}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}

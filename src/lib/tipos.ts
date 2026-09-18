@@ -16,6 +16,8 @@ export interface Imagen {
 export interface ConfiguracionSitio {
   telefonoWhatsapp: string;
   emailContacto: string;
+  /** Promesa de plazo que se muestra junto al formulario y a WhatsApp. */
+  tiempoRespuesta?: string;
   direccion: string;
   redesSociales: {
     instagram?: string;

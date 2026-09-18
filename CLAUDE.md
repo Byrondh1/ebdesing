@@ -96,6 +96,25 @@ salen de ahí. Las imágenes OG no lo imprimen, así que cambiarlo no obliga a r
 - **No hay tipo `pagina`.** Títulos y descripciones de las 5 páginas fijas viven en el código
   (decisión de Byron); la auditoría garantiza que sean únicos. Las de proyecto salen de sus campos.
 
+### Conversión (tanda B)
+- **CTA único en todo el sitio: "Solicitar cotización"**. Dos textos para la misma acción reparten
+  el reconocimiento; si cambia, cambia en `Hero.astro` y `CTA.astro` a la vez.
+- **`/gracias` solo se alcanza con el envío confirmado.** El formulario navega ahí únicamente con
+  `{ok:true}` del endpoint. Ante 400 o 502 se queda en `/contacto` con el error a la vista:
+  redirigir tras un fallo le haría creer al visitante que su mensaje salió. Es `noindex` y está
+  fuera del sitemap.
+- **En móvil manda `BarraMovil`; en escritorio, `BotonWhatsApp`. Nunca los dos.** El body lleva
+  `pb-16 sm:pb-0` para que la barra no tape el pie ni el botón de enviar — verificado comparando
+  cajas, y comprobado que la prueba falla si se quita el padding.
+- **Las migas van solo en páginas internas**, con el mismo camino en pantalla y en `BreadcrumbList`.
+  Una prueba compara las dos listas: si se separan, falla.
+- **FAQPage solo se emite si las preguntas están en la página.** Marcar respuestas que el visitante
+  no encuentra es motivo de penalización; la prueba comprueba que cada `name` del schema aparece
+  en un `<summary>`.
+- **Secciones vacías no se pintan**: proyecto sin servicios enlazados, servicio sin proyectos,
+  FAQ o equipo sin documentos. Restan más de lo que suman.
+- El plazo de respuesta sale de `configuracionSitio.tiempoRespuesta` en Sanity, no del código.
+
 ### Cómo fluye el contenido
 ```
 Sanity ──> src/lib/sanity.ts ──┐

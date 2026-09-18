@@ -5,17 +5,20 @@ import Servicios from '../components/sections/Servicios.astro';
 import Proyectos from '../components/sections/Proyectos.astro';
 import Testimonios from '../components/sections/Testimonios.astro';
 import CTA from '../components/sections/CTA.astro';
+import FAQ from '../components/sections/FAQ.astro';
 import {
   obtenerServicios,
   obtenerProyectosDestacados,
   obtenerTestimonios,
+  obtenerPreguntas,
 } from '../lib/contenido';
-import { listaDeServicios } from '../lib/seo';
+import { listaDeServicios, preguntasFrecuentes } from '../lib/seo';
 
-const [servicios, proyectosDestacados, testimonios] = await Promise.all([
+const [servicios, proyectosDestacados, testimonios, preguntas] = await Promise.all([
   obtenerServicios(),
   obtenerProyectosDestacados(),
   obtenerTestimonios(),
+  obtenerPreguntas(),
 ]);
 ---
 
@@ -23,11 +26,17 @@ const [servicios, proyectosDestacados, testimonios] = await Promise.all([
   titulo="Agencia de Diseño y Publicidad"
   descripcion="EBDesing diseña identidad de marca, campañas publicitarias y gran formato en Ecuador. Pide tu cotización por WhatsApp o formulario."
   ogImagen="/og/inicio.png"
-  jsonLd={[listaDeServicios(servicios, Astro.site)]}
+  jsonLd={[
+    listaDeServicios(servicios, Astro.site),
+    // Solo se emite FAQPage si las preguntas están realmente en la página:
+    // marcar respuestas que el visitante no encuentra es motivo de penalización.
+    ...(preguntas.length > 0 ? [preguntasFrecuentes(preguntas)] : []),
+  ]}
 >
   <Hero />
   <Servicios servicios={servicios} />
   <Proyectos proyectos={proyectosDestacados} />
   <Testimonios testimonios={testimonios} />
+  <FAQ preguntas={preguntas} />
   <CTA />
 </Base>

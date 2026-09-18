@@ -20,6 +20,7 @@ import type {
 export const configuracionSitio: ConfiguracionSitio = {
   telefonoWhatsapp: '593000000000',
   emailContacto: 'contacto@ebdesing.com',
+  tiempoRespuesta: 'Respondemos en menos de 24 horas hábiles.',
   direccion: 'Ecuador',
   redesSociales: {
     instagram: 'https://instagram.com/',

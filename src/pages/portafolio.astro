@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import Proyectos from '../components/sections/Proyectos.astro';
 import CTA from '../components/sections/CTA.astro';
 import { obtenerProyectos } from '../lib/contenido';
+import Migas from '../components/Migas.astro';
 import { migas } from '../lib/seo';
 
 const proyectos = await obtenerProyectos();
@@ -16,7 +17,8 @@ const proyectos = await obtenerProyectos();
 >
   <section class="bg-brand-black pt-16 text-brand-white sm:pt-20">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <h1 class="font-display text-4xl font-bold sm:text-5xl">Portafolio</h1>
+      <Migas ruta={[{ nombre: 'Portafolio', href: '/portafolio/' }]} />
+      <h1 class="mt-6 font-display text-4xl font-bold sm:text-5xl">Portafolio</h1>
       <p class="mt-4 max-w-2xl text-lg text-brand-white/80">
         Marcas, campañas y rotulación que EBDesing ha entregado en Ecuador. Cada proyecto
         cuenta qué pidió el cliente y qué quedó instalado o publicado.

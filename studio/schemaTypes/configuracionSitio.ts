@@ -35,6 +35,15 @@ export const configuracionSitio = defineType({
       validation: (regla) => regla.required().email(),
     }),
     defineField({
+      name: 'tiempoRespuesta',
+      title: 'Tiempo de respuesta',
+      description:
+        'Aparece junto al formulario y junto al botón de WhatsApp. Es una promesa al cliente: pon un plazo que se pueda cumplir siempre, no el mejor caso.',
+      type: 'string',
+      validation: (regla) => regla.required().max(80),
+      initialValue: 'Respondemos en menos de 24 horas hábiles.',
+    }),
+    defineField({
       name: 'direccion',
       title: 'Ubicación',
       description: 'Ciudad o dirección. Aparece en el pie y ayuda en las búsquedas locales.',

@@ -2,9 +2,18 @@
 import Base from '../layouts/Base.astro';
 import Servicios from '../components/sections/Servicios.astro';
 import CTA from '../components/sections/CTA.astro';
-import { obtenerServicios } from '../lib/contenido';
+import Migas from '../components/Migas.astro';
+import { obtenerServicios, obtenerProyectosDeServicio } from '../lib/contenido';
 
 const servicios = await obtenerServicios();
+
+// Enlaces internos: de cada servicio a los proyectos donde intervino. La relación
+// vive en el proyecto, así que se resuelve al revés aquí.
+const proyectosPorServicio = Object.fromEntries(
+  await Promise.all(
+    servicios.map(async (s) => [s.slug, await obtenerProyectosDeServicio(s.slug)] as const)
+  )
+);
 import { listaDeServicios, migas } from '../lib/seo';
 ---
 
@@ -19,7 +28,8 @@ import { listaDeServicios, migas } from '../lib/seo';
 >
   <section class="bg-brand-black py-16 text-brand-white sm:py-20">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <h1 class="font-display text-4xl font-bold sm:text-5xl">Servicios</h1>
+      <Migas ruta={[{ nombre: 'Servicios', href: '/servicios/' }]} />
+      <h1 class="mt-6 font-display text-4xl font-bold sm:text-5xl">Servicios</h1>
       <p class="mt-4 max-w-2xl text-lg text-brand-white/80">
         Cubrimos el ciclo completo de una marca: cómo se ve, cómo se anuncia y cómo llega
         impresa. Son cuatro frentes —identidad, publicidad, gran formato y redes— y puedes
@@ -28,7 +38,7 @@ import { listaDeServicios, migas } from '../lib/seo';
     </div>
   </section>
 
-  <Servicios servicios={servicios} mostrarCompleto={true} />
+  <Servicios servicios={servicios} mostrarCompleto={true} proyectosPorServicio={proyectosPorServicio} />
 
   <CTA
     titulo="¿No ves lo que buscas?"

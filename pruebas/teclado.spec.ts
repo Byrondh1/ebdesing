@@ -69,7 +69,7 @@ test.describe('Teclado', () => {
     await page.fill('#email', 'byron@ejemplo.com');
     await page.locator('#email').press('Enter');
 
-    await expect(page.locator('#estado-cotizacion')).toContainText(/recibido/i);
+    await page.waitForURL('**/gracias/');
   });
 
   test('el mensaje de resultado se anuncia sin robar el foco', async ({ page }) => {

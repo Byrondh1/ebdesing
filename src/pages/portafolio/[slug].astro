@@ -5,6 +5,7 @@ import Button from '../../components/ui/Button.astro';
 import CTA from '../../components/sections/CTA.astro';
 import { obtenerProyectos, obtenerConfiguracion, enlaceWhatsapp } from '../../lib/contenido';
 import { recortar, conjuntoDeFuentes } from '../../lib/imagenes';
+import Migas from '../../components/Migas.astro';
 import { migas, obraCreativa } from '../../lib/seo';
 import type { Proyecto } from '../../lib/tipos';
 
@@ -65,13 +66,12 @@ const mensajeWhatsapp = `Hola, vi el proyecto "${proyecto.titulo}" en su portafo
   <article>
     <section class="bg-brand-black py-16 text-brand-white sm:py-20">
       <div class="mx-auto max-w-6xl px-4 sm:px-6">
-        <nav aria-label="Migas de pan" class="text-sm text-brand-white/60">
-          <a href="/portafolio" class="rounded hover:text-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold">
-            Portafolio
-          </a>
-          <span aria-hidden="true"> / </span>
-          <span class="text-brand-white">{proyecto.titulo}</span>
-        </nav>
+        <Migas
+          ruta={[
+            { nombre: 'Portafolio', href: '/portafolio/' },
+            { nombre: proyecto.titulo, href: `/portafolio/${proyecto.slug}/` },
+          ]}
+        />
 
         <Badge variante="oro" class="mt-6">{proyecto.categoria}</Badge>
         <h1 class="mt-4 max-w-3xl font-display text-4xl font-bold sm:text-5xl">{proyecto.titulo}</h1>
@@ -100,6 +100,25 @@ const mensajeWhatsapp = `Hola, vi el proyecto "${proyecto.titulo}" en su portafo
         <div class="md:col-span-2">
           <h2 class="font-display text-2xl font-bold">El proyecto</h2>
           <p class="mt-4 text-lg text-brand-gray">{proyecto.descripcion}</p>
+
+          {/* Los dos tiempos del caso. Son opcionales en Sanity, así que cada uno
+              aparece solo si está: media sección vacía se nota más que su ausencia. */}
+          {
+            proyecto.reto && (
+              <div class="mt-10">
+                <h3 class="font-display text-xs tracking-widest text-brand-gray uppercase">El reto</h3>
+                <p class="mt-2 text-lg">{proyecto.reto}</p>
+              </div>
+            )
+          }
+          {
+            proyecto.solucion && (
+              <div class="mt-8">
+                <h3 class="font-display text-xs tracking-widest text-brand-gray uppercase">La solución</h3>
+                <p class="mt-2 text-lg">{proyecto.solucion}</p>
+              </div>
+            )
+          }
         </div>
 
         <aside class="border-l-4 border-brand-gold pl-6">
@@ -108,6 +127,30 @@ const mensajeWhatsapp = `Hola, vi el proyecto "${proyecto.titulo}" en su portafo
           <Button href={enlaceWhatsapp(telefonoWhatsapp, mensajeWhatsapp)} class="mt-6">
             Quiero algo así
           </Button>
+
+          {/* Enlace de vuelta a los servicios. Si el proyecto no tiene ninguno
+              enlazado en Sanity, no se pinta la sección. */}
+          {
+            proyecto.servicios && proyecto.servicios.length > 0 && (
+              <div class="mt-8 border-t border-brand-gray/25 pt-6">
+                <h3 class="font-display text-xs tracking-widest text-brand-gray uppercase">
+                  Servicios que intervinieron
+                </h3>
+                <ul class="mt-2 space-y-1">
+                  {proyecto.servicios.map((servicio) => (
+                    <li>
+                      <a
+                        href={`/servicios/#${servicio.slug}`}
+                        class="rounded font-medium underline decoration-brand-gold underline-offset-4 hover:text-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
+                      >
+                        {servicio.titulo}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
         </aside>
       </div>
     </section>

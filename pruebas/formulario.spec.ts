@@ -50,7 +50,7 @@ test.describe('Formulario de cotización', () => {
     await expect(page.locator('[data-error-de="email"]')).toBeVisible();
   });
 
-  test('envío correcto: un POST, mensaje de éxito y formulario limpio', async ({ page }) => {
+  test('envío confirmado: un POST y redirección a /gracias/', async ({ page }) => {
     await page.route('**/api/cotizacion', (ruta) =>
       ruta.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' })
     );
@@ -59,10 +59,38 @@ test.describe('Formulario de cotización', () => {
     await rellenarValido(page);
     await page.click('button[type="submit"]');
 
-    await expect(page.locator('#estado-cotizacion')).toBeVisible();
-    await expect(page.locator('#estado-cotizacion')).toContainText(/recibido/i);
+    await page.waitForURL('**/gracias/');
     expect(peticiones).toEqual(['POST']);
-    await expect(page.locator('#nombre')).toHaveValue('');
+    await expect(page.getByRole('heading', { level: 1 })).toContainText(/mensaje/i);
+  });
+
+  test('si el envío falla NO se redirige: el error se ve y se sigue en contacto', async ({ page }) => {
+    // Lo importante de /gracias es que solo se llegue con el envío confirmado.
+    // Redirigir tras un 502 le haría creer al visitante que su mensaje salió.
+    await page.route('**/api/cotizacion', (ruta) =>
+      ruta.fulfill({ status: 502, contentType: 'application/json', body: '{"ok":false}' })
+    );
+
+    await rellenarValido(page);
+    await page.click('button[type="submit"]');
+    await page.waitForTimeout(800);
+
+    await expect(page).toHaveURL(/\/contacto\/$/);
+    await expect(page.locator('#estado-cotizacion')).toBeVisible();
+  });
+
+  test('un 400 tampoco redirige', async ({ page }) => {
+    await page.route('**/api/cotizacion', (ruta) =>
+      ruta.fulfill({
+        status: 400,
+        contentType: 'application/json',
+        body: JSON.stringify({ ok: false, campos: { email: 'Ese correo no existe.' } }),
+      })
+    );
+    await rellenarValido(page);
+    await page.click('button[type="submit"]');
+    await page.waitForTimeout(600);
+    await expect(page).toHaveURL(/\/contacto\/$/);
   });
 
   test('si el servidor rechaza un campo, el error aparece junto a ese campo', async ({ page }) => {
@@ -94,10 +122,10 @@ test.describe('Formulario de cotización', () => {
     await expect(estado.locator('a[href^="https://wa.me/"]')).toHaveCount(1);
   });
 
-  test('el botón se bloquea mientras se envía y se recupera después', async ({ page }) => {
+  test('el botón se bloquea mientras se envía y se recupera si falla', async ({ page }) => {
     await page.route('**/api/cotizacion', async (ruta) => {
       await new Promise((r) => setTimeout(r, 400));
-      await ruta.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' });
+      await ruta.fulfill({ status: 502, contentType: 'application/json', body: '{"ok":false}' });
     });
 
     await rellenarValido(page);
@@ -121,10 +149,7 @@ test.describe('Formulario de cotización', () => {
     expect(oculto).toBe(true);
   });
 
-  test('el botón flotante de WhatsApp sigue visible al hacer scroll', async ({ page }) => {
-    const flotante = page.locator('a[href^="https://wa.me/"]').last();
-    await expect(flotante).toBeVisible();
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    await expect(flotante).toBeVisible();
+  test('el plazo de respuesta se ve junto al formulario', async ({ page }) => {
+    await expect(page.getByText(/respondemos en menos de/i).first()).toBeVisible();
   });
 });

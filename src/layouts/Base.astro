@@ -3,6 +3,7 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import BotonWhatsApp from '../components/BotonWhatsApp.astro';
+import BarraMovil from '../components/BarraMovil.astro';
 import { organizacion, sitioWeb } from '../lib/seo';
 import { obtenerConfiguracion } from '../lib/contenido';
 
@@ -84,7 +85,9 @@ const schemas = noindex
     }
   </head>
 
-  <body class="flex min-h-screen flex-col bg-brand-white text-brand-black">
+  {/* pb-16 en móvil: deja sitio para la barra fija de abajo. Sin esto tapa el pie y
+      el botón de enviar del formulario, y no hay manera de llegar a ellos. */}
+  <body class="flex min-h-screen flex-col bg-brand-white pb-16 text-brand-black sm:pb-0">
     <a
       href="#contenido"
       class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-brand-gold focus:px-4 focus:py-2 focus:font-semibold focus:text-brand-black"
@@ -100,6 +103,8 @@ const schemas = noindex
 
     <Footer />
 
+    {/* En móvil manda la barra; en escritorio, el flotante. Nunca los dos. */}
     <BotonWhatsApp />
+    <BarraMovil />
   </body>
 </html>

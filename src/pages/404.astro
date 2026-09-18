@@ -16,12 +16,45 @@ import Button from '../components/ui/Button.astro';
       <p class="font-display text-7xl font-bold text-brand-gold sm:text-8xl">404</p>
       <h1 class="mt-4 font-display text-3xl font-bold sm:text-4xl">Esta página no existe</h1>
       <p class="mt-4 max-w-md text-brand-white/80">
-        O cambió de dirección, o el enlace venía mal. Desde el inicio llegas a todo.
+        O cambió de dirección, o el enlace venía mal. Desde aquí llegas a lo que
+        probablemente buscabas.
       </p>
       <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-        <Button href="/">Volver al inicio</Button>
-        <Button href="/contacto" variante="contorno">Contacto</Button>
+        <Button href="/contacto/" tamano="lg">Solicitar cotización</Button>
+        <Button href="/" variante="contorno" tamano="lg">Volver al inicio</Button>
       </div>
+    </div>
+  </section>
+
+  {/* Una página de error sin salidas es un callejón. Estas son las dos que más
+      sentido tienen para quien llegó buscando algo concreto. */}
+  <section class="py-16 sm:py-20">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <h2 class="font-display text-2xl font-bold">¿Buscabas alguna de estas?</h2>
+      <ul class="mt-8 grid gap-6 sm:grid-cols-2">
+        <li>
+          <a
+            href="/servicios/"
+            class="group block rounded-lg border border-brand-gray/25 p-6 transition-colors hover:border-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
+          >
+            <h3 class="font-display text-lg font-bold group-hover:text-brand-gold">Servicios</h3>
+            <p class="mt-2 text-brand-gray">
+              Identidad de marca, diseño publicitario, gran formato y contenido para redes.
+            </p>
+          </a>
+        </li>
+        <li>
+          <a
+            href="/portafolio/"
+            class="group block rounded-lg border border-brand-gray/25 p-6 transition-colors hover:border-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
+          >
+            <h3 class="font-display text-lg font-bold group-hover:text-brand-gold">Portafolio</h3>
+            <p class="mt-2 text-brand-gray">
+              Proyectos entregados, con el reto de cada cliente y en qué quedó.
+            </p>
+          </a>
+        </li>
+      </ul>
     </div>
   </section>
 </Base>

@@ -1,0 +1,45 @@
+---
+/**
+ * Migas de pan visibles. Van SOLO en páginas internas: en el inicio no hay camino
+ * que mostrar.
+ *
+ * El JSON-LD BreadcrumbList lo emite la página con el helper `migas()` de seo.ts,
+ * con la misma lista que se pasa aquí. Si los dos se separan, Google ve un camino
+ * que el visitante no ve.
+ */
+interface Props {
+  /** Sin el inicio: este componente lo antepone. */
+  ruta: Array<{ nombre: string; href: string }>;
+}
+
+const { ruta } = Astro.props;
+const completa = [{ nombre: 'Inicio', href: '/' }, ...ruta];
+---
+
+<nav aria-label="Migas de pan" class="text-sm text-brand-white/60">
+  <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
+    {
+      completa.map((paso, i) => {
+        const esUltimo = i === completa.length - 1;
+        return (
+          <li class="flex items-center gap-2">
+            {
+              esUltimo ? (
+                // El último es la página actual: no se enlaza a sí misma.
+                <span class="text-brand-white">{paso.nombre}</span>
+              ) : (
+                <a
+                  href={paso.href}
+                  class="rounded hover:text-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
+                >
+                  {paso.nombre}
+                </a>
+              )
+            }
+            {!esUltimo && <span aria-hidden="true">/</span>}
+          </li>
+        );
+      })
+    }
+  </ol>
+</nav>

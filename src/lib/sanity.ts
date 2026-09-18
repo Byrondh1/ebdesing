@@ -109,6 +109,7 @@ export async function obtenerConfiguracion(): Promise<ConfiguracionSitio | null>
   return clienteSanity.fetch(`*[_type == "configuracionSitio"][0] {
     telefonoWhatsapp,
     emailContacto,
+    tiempoRespuesta,
     direccion,
     redesSociales
   }`);

@@ -129,3 +129,24 @@ export function migas(
     })),
   };
 }
+
+/**
+ * Preguntas frecuentes en formato FAQPage.
+ *
+ * Google puede mostrar estas respuestas directamente en los resultados, así que el
+ * texto del schema debe ser EXACTAMENTE el que se ve en la página: marcar una
+ * respuesta que el visitante no encuentra al llegar es motivo de penalización.
+ */
+export function preguntasFrecuentes(
+  preguntas: Array<{ pregunta: string; respuesta: string }>
+) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: preguntas.map((p) => ({
+      '@type': 'Question',
+      name: p.pregunta,
+      acceptedAnswer: { '@type': 'Answer', text: p.respuesta },
+    })),
+  };
+}

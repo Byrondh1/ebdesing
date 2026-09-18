@@ -2,15 +2,18 @@
 interface Props {
   /** Si viene, toda la tarjeta es un enlace. */
   href?: string;
+  /** Ancla, para poder enlazar a una tarjeta concreta desde otra página. */
+  id?: string;
   class?: string;
 }
 
-const { href, class: claseExtra } = Astro.props;
+const { href, id, class: claseExtra } = Astro.props;
 const Etiqueta = href ? 'a' : 'div';
 ---
 
 <Etiqueta
   href={href}
+  id={id}
   class:list={[
     'group flex flex-col rounded-lg border border-brand-gray/25 bg-brand-white p-6 text-brand-black transition-colors',
     href &&

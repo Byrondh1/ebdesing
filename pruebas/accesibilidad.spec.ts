@@ -41,6 +41,15 @@ test.describe('Accesibilidad', () => {
     });
   }
 
+  test('/gracias también', async ({ page }) => {
+    await page.goto('/gracias/');
+    const { violations } = await escanear(page);
+    const graves = violations.filter((v) => GRAVEDADES_QUE_FALLAN.includes(v.impact ?? ''));
+    expect(graves, `
+${resumir(graves)}
+`).toEqual([]);
+  });
+
   test('el 404 también', async ({ page }) => {
     await page.goto('/esta-ruta-no-existe/');
     const { violations } = await escanear(page);

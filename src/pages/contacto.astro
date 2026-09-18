@@ -3,9 +3,10 @@ import Base from '../layouts/Base.astro';
 import Button from '../components/ui/Button.astro';
 import FormularioCotizacion from '../components/sections/FormularioCotizacion.astro';
 import { obtenerConfiguracion, obtenerServicios, enlaceWhatsapp } from '../lib/contenido';
+import Migas from '../components/Migas.astro';
 import { migas } from '../lib/seo';
 
-const [{ emailContacto, direccion, telefonoWhatsapp }, servicios] = await Promise.all([
+const [{ emailContacto, direccion, telefonoWhatsapp, tiempoRespuesta }, servicios] = await Promise.all([
   obtenerConfiguracion(),
   obtenerServicios(),
 ]);
@@ -21,7 +22,8 @@ const whatsapp = enlaceWhatsapp(telefonoWhatsapp);
 >
   <section class="bg-brand-black py-16 text-brand-white sm:py-20">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <h1 class="font-display text-4xl font-bold sm:text-5xl">Cotiza tu proyecto</h1>
+      <Migas ruta={[{ nombre: 'Contacto', href: '/contacto/' }]} />
+      <h1 class="mt-6 font-display text-4xl font-bold sm:text-5xl">Cotiza tu proyecto</h1>
       <p class="mt-4 max-w-2xl text-lg text-brand-white/80">
         Cuéntanos qué necesitas y te respondemos con una propuesta y un precio. Puedes usar el
         formulario o escribir directo por WhatsApp; en ambos casos contestamos en menos de 24
@@ -38,7 +40,11 @@ const whatsapp = enlaceWhatsapp(telefonoWhatsapp);
           Los campos con <span aria-hidden="true">*</span> son obligatorios.
         </p>
         <div class="mt-8">
-          <FormularioCotizacion servicios={servicios} enlaceWhatsapp={whatsapp} />
+          <FormularioCotizacion
+            servicios={servicios}
+            enlaceWhatsapp={whatsapp}
+            tiempoRespuesta={tiempoRespuesta}
+          />
         </div>
       </div>
 
@@ -52,6 +58,7 @@ const whatsapp = enlaceWhatsapp(telefonoWhatsapp);
           <Button href={whatsapp}>WhatsApp</Button>
           <Button href={`mailto:${emailContacto}`} variante="contorno">Correo</Button>
         </div>
+        {tiempoRespuesta && <p class="mt-3 text-sm text-brand-gray">{tiempoRespuesta}</p>}
 
         <dl class="mt-10 space-y-4 text-sm">
           <div>

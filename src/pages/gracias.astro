@@ -1,0 +1,45 @@
+---
+import Base from '../layouts/Base.astro';
+import Button from '../components/ui/Button.astro';
+import { obtenerConfiguracion, enlaceWhatsapp } from '../lib/contenido';
+
+/**
+ * Página de confirmación tras enviar el formulario.
+ *
+ * Solo se llega aquí si el endpoint confirmó el envío: el formulario redirige con
+ * `{ok:true}` y nunca antes. Si el envío falla, el visitante se queda en /contacto
+ * con el error a la vista — mandarlo aquí le haría creer que su mensaje salió.
+ *
+ * `noindex` y fuera del sitemap: es el final de un flujo, no una página que deba
+ * aparecer en búsquedas.
+ */
+const { telefonoWhatsapp, emailContacto, tiempoRespuesta } = await obtenerConfiguracion();
+---
+
+<Base
+  titulo="Mensaje recibido"
+  descripcion="Recibimos tu solicitud de cotización. Te respondemos en breve."
+  noindex={true}
+>
+  <section class="bg-brand-black py-20 text-brand-white sm:py-28">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6">
+      <p class="font-display text-sm tracking-[0.3em] text-brand-gold uppercase">Recibido</p>
+      <h1 class="mt-6 font-display text-4xl font-bold sm:text-5xl">Tu mensaje ya está con nosotros</h1>
+      <p class="mt-4 text-lg text-brand-white/80">
+        {tiempoRespuesta ?? 'Te respondemos en cuanto lo revisemos.'} Si es urgente, escríbenos
+        directo por WhatsApp y lo resolvemos ahí mismo.
+      </p>
+
+      <div class="mt-10 flex flex-col gap-3 sm:flex-row">
+        <Button href={enlaceWhatsapp(telefonoWhatsapp, 'Hola, acabo de enviar una cotización por el sitio.')} tamano="lg">
+          Escribir por WhatsApp
+        </Button>
+        <Button href="/portafolio/" variante="contorno" tamano="lg">Ver el portafolio</Button>
+      </div>
+
+      <p class="mt-8 text-sm text-brand-gray-light">
+        ¿Prefieres correo? <a href={`mailto:${emailContacto}`} class="rounded underline hover:text-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold">{emailContacto}</a>
+      </p>
+    </div>
+  </section>
+</Base>

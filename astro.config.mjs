@@ -19,7 +19,7 @@ import registrarSalida from './integraciones/registrar-salida.mjs';
 const DOMINIO = 'https://ebdesing.ebcorp.dev';
 
 // Rutas que no deben indexarse ni aparecer en el sitemap.
-const EXCLUIDAS = ['/components-preview', '/404'];
+const EXCLUIDAS = ['/components-preview', '/404', '/gracias'];
 
 /**
  * Variables que se necesitan DURANTE el build (al generar las páginas).

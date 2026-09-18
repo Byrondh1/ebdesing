@@ -1,0 +1,61 @@
+---
+import { recortar } from '../../lib/imagenes';
+import type { MiembroEquipo } from '../../lib/tipos';
+
+interface Props {
+  equipo: MiembroEquipo[];
+}
+
+const { equipo } = Astro.props;
+
+/** Iniciales para cuando la foto aún no está subida. */
+const iniciales = (nombre: string) =>
+  nombre
+    .split(' ')
+    .slice(0, 2)
+    .map((parte) => parte[0] ?? '')
+    .join('')
+    .toUpperCase();
+---
+
+{
+  equipo.length > 0 && (
+    <section class="bg-brand-white py-20 sm:py-24">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <h2 class="font-display text-3xl font-bold sm:text-4xl">Quiénes lo hacemos</h2>
+
+        <ul class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {equipo.map((miembro) => {
+            const foto = recortar(miembro.foto, 400, 400);
+            return (
+              <li>
+                {foto ? (
+                  <img
+                    src={foto}
+                    alt={miembro.foto.alt}
+                    width="400"
+                    height="400"
+                    loading="lazy"
+                    decoding="async"
+                    class="aspect-square w-full rounded-lg object-cover"
+                  />
+                ) : (
+                  <div
+                    class="flex aspect-square w-full items-center justify-center rounded-lg bg-brand-black"
+                    aria-hidden="true"
+                  >
+                    <span class="font-display text-4xl font-bold text-brand-gold">
+                      {iniciales(miembro.nombre)}
+                    </span>
+                  </div>
+                )}
+                <h3 class="mt-4 font-display text-lg font-bold">{miembro.nombre}</h3>
+                <p class="text-brand-gray">{miembro.cargo}</p>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
+  )
+}

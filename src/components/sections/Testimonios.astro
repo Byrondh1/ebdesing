@@ -23,6 +23,21 @@ const { testimonios } = Astro.props;
               <figcaption class="mt-4 text-sm">
                 <span class="font-semibold">{testimonio.nombreCliente}</span>
                 <span class="text-brand-gray"> · {testimonio.empresa}</span>
+                {
+                  testimonio.perfilGoogle && (
+                    <>
+                      {' · '}
+                      <a
+                        href={testimonio.perfilGoogle}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="rounded underline decoration-brand-gold underline-offset-4 hover:text-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
+                      >
+                        ver reseña
+                      </a>
+                    </>
+                  )
+                }
               </figcaption>
             </figure>
           </li>

@@ -6,9 +6,11 @@ interface Props {
   servicios: Servicio[];
   /** Se ofrece como alternativa si el envío falla. */
   enlaceWhatsapp: string;
+  /** Promesa de plazo, editable en Sanity. */
+  tiempoRespuesta?: string;
 }
 
-const { servicios, enlaceWhatsapp } = Astro.props;
+const { servicios, enlaceWhatsapp, tiempoRespuesta } = Astro.props;
 
 const campo =
   'mt-2 w-full rounded-md border border-brand-gray/40 bg-brand-white px-4 py-2.5 text-brand-black ' +
@@ -102,9 +104,12 @@ const error = 'mt-1 text-sm text-red-700';
     />
   </div>
 
-  <Button type="submit" tamano="lg" class="w-full sm:w-auto">
-    <span data-texto-boton>Enviar cotización</span>
-  </Button>
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+    <Button type="submit" tamano="lg" class="w-full sm:w-auto">
+      <span data-texto-boton>Enviar cotización</span>
+    </Button>
+    {tiempoRespuesta && <p class="text-sm text-brand-gray">{tiempoRespuesta}</p>}
+  </div>
 
   {/* aria-live para que un lector de pantalla anuncie el resultado sin mover el foco. */}
   <p id="estado-cotizacion" role="status" aria-live="polite" class="text-sm" hidden></p>
@@ -187,10 +192,14 @@ const error = 'mt-1 text-sm text-red-700';
         const cuerpo = await respuesta.json().catch(() => ({}));
 
         if (respuesta.ok && cuerpo.ok) {
+          // Solo se navega cuando el servidor CONFIRMA el envío. Si Resend falla,
+          // el visitante se queda aquí con el error: mandarlo a /gracias le haría
+          // creer que su mensaje salió cuando no salió.
           form.reset();
           estado.className = 'rounded-md bg-brand-gold px-4 py-3 text-sm font-semibold text-brand-black';
-          estado.textContent = 'Recibido. Te respondemos en menos de 24 horas hábiles.';
+          estado.textContent = 'Recibido. Te llevamos a la confirmación…';
           estado.hidden = false;
+          window.location.assign('/gracias/');
           return;
         }
 
