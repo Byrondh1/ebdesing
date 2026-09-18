@@ -22,6 +22,13 @@ export const configuracionSitio: ConfiguracionSitio = {
   emailContacto: 'contacto@ebdesing.com',
   tiempoRespuesta: 'Respondemos en menos de 24 horas hábiles.',
   direccion: 'Ecuador',
+  local: {
+    calle: 'Av. de ejemplo 123 y Segunda',
+    ciudad: 'Quito',
+    provincia: 'Pichincha',
+    mapaIncrustado: 'https://www.google.com/maps/embed?pb=!ejemplo',
+    enlaceMapa: 'https://maps.google.com/?q=ejemplo',
+  },
   redesSociales: {
     instagram: 'https://instagram.com/',
     facebook: 'https://facebook.com/',

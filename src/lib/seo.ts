@@ -35,13 +35,32 @@ const esTelefonoReal = (telefono: string) => Boolean(telefono) && telefono !== T
  * TODO(Byron): `logo` apunta al favicon. Para rich results conviene un PNG del logo
  * de al menos 112x112 — reemplazar cuando exista el archivo de marca.
  */
+/**
+ * ¿Hay local físico de verdad? Con calle y ciudad, sí: lo demás son datos sueltos
+ * que no bastan para publicarse como negocio local.
+ */
+export const tieneLocal = (config: ConfiguracionSitio) =>
+  Boolean(config.local?.calle && config.local?.ciudad);
+
+/**
+ * La entidad del negocio. Va en todas las páginas.
+ *
+ * Con local físico se publica como `LocalBusiness`, que es un SUBTIPO de
+ * Organization: se cambia el @type pero se mantiene el mismo @id. Emitir las dos por
+ * separado crearía dos entidades compitiendo por el mismo negocio, que es peor que
+ * tener solo una.
+ *
+ * TODO(Byron): `logo` apunta al favicon. Para rich results conviene un PNG del logo
+ * de al menos 112x112 — reemplazar cuando exista el archivo de marca.
+ */
 export function organizacion(sitio: URL | undefined, config: ConfiguracionSitio) {
-  const { emailContacto, telefonoWhatsapp, direccion, redesSociales } = config;
+  const { emailContacto, telefonoWhatsapp, direccion, redesSociales, local } = config;
   const redes = (Object.values(redesSociales ?? {}).filter(Boolean) as string[]).filter(esPerfilReal);
+  const conLocal = tieneLocal(config);
 
   return {
     '@context': 'https://schema.org',
-    '@type': 'Organization',
+    '@type': conLocal ? 'LocalBusiness' : 'Organization',
     '@id': absoluta('/#organizacion', sitio),
     name: NOMBRE_MARCA,
     alternateName: NOMBRE_COMERCIAL,
@@ -51,12 +70,22 @@ export function organizacion(sitio: URL | undefined, config: ConfiguracionSitio)
       'Agencia de diseño y publicidad en Ecuador: identidad de marca, campañas, gran formato y contenido para redes.',
     ...(emailContacto && { email: emailContacto }),
     ...(esTelefonoReal(telefonoWhatsapp) && { telephone: `+${telefonoWhatsapp}` }),
-    address: {
-      '@type': 'PostalAddress',
-      addressCountry: 'EC',
-      ...(direccion && { addressLocality: direccion }),
-    },
+    address: conLocal
+      ? {
+          '@type': 'PostalAddress',
+          addressCountry: 'EC',
+          streetAddress: local!.calle,
+          addressLocality: local!.ciudad,
+          ...(local!.provincia && { addressRegion: local!.provincia }),
+          ...(local!.codigoPostal && { postalCode: local!.codigoPostal }),
+        }
+      : {
+          '@type': 'PostalAddress',
+          addressCountry: 'EC',
+          ...(direccion && { addressLocality: direccion }),
+        },
     areaServed: { '@type': 'Country', name: 'Ecuador' },
+    ...(conLocal && local!.enlaceMapa && { hasMap: local!.enlaceMapa }),
     ...(redes.length > 0 && { sameAs: redes }),
   };
 }

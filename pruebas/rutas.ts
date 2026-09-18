@@ -33,5 +33,6 @@ export const cotizacionValida = {
   telefono: '0991234567',
   servicioInteres: '',
   mensaje: 'Quiero cotizar el rediseño de mi marca.',
+  privacidad: 'on',
   honeypot: '',
 };

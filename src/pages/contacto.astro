@@ -4,14 +4,21 @@ import Button from '../components/ui/Button.astro';
 import FormularioCotizacion from '../components/sections/FormularioCotizacion.astro';
 import { obtenerConfiguracion, obtenerServicios, enlaceWhatsapp } from '../lib/contenido';
 import Migas from '../components/Migas.astro';
+import MapaLocal from '../components/MapaLocal.astro';
 import { migas } from '../lib/seo';
 
-const [{ emailContacto, direccion, telefonoWhatsapp, tiempoRespuesta }, servicios] = await Promise.all([
+const [{ emailContacto, direccion, telefonoWhatsapp, tiempoRespuesta, local }, servicios] = await Promise.all([
   obtenerConfiguracion(),
   obtenerServicios(),
 ]);
 
 const whatsapp = enlaceWhatsapp(telefonoWhatsapp);
+
+// Con calle y ciudad hay local de verdad; si no, se muestra solo la cobertura.
+const hayLocal = Boolean(local?.calle && local?.ciudad);
+const direccionMostrada = hayLocal
+  ? [local!.calle, local!.ciudad, local!.provincia].filter(Boolean).join(', ')
+  : direccion;
 ---
 
 <Base
@@ -73,11 +80,29 @@ const whatsapp = enlaceWhatsapp(telefonoWhatsapp);
             </dd>
           </div>
           <div>
-            <dt class="font-display tracking-widest text-brand-gray uppercase">Ubicación</dt>
-            <dd class="mt-1">{direccion}</dd>
+            <dt class="font-display tracking-widest text-brand-gray uppercase">
+              {hayLocal ? 'Dónde estamos' : 'Cobertura'}
+            </dt>
+            <dd class="mt-1">{direccionMostrada}</dd>
           </div>
         </dl>
       </div>
     </div>
   </section>
+
+  {
+    hayLocal && local?.mapaIncrustado && (
+      <section class="pb-16 sm:pb-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <h2 class="font-display text-2xl font-bold">Cómo llegar</h2>
+          <p class="mt-2 text-brand-gray">
+            El mapa se carga solo si lo pides: hasta entonces esta página no habla con Google.
+          </p>
+          <div class="mt-6">
+            <MapaLocal local={local} />
+          </div>
+        </div>
+      </section>
+    )
+  }
 </Base>

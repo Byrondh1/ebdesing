@@ -1,0 +1,104 @@
+---
+import { recortar } from '../lib/imagenes';
+import type { Local } from '../lib/tipos';
+
+/**
+ * Mapa que NO carga nada de Google hasta que alguien lo pide.
+ *
+ * Un iframe de Google Maps incrustado sin más pesa cientos de kilobytes, abre
+ * conexiones a varios dominios y planta cookies de terceros en cuanto se carga la
+ * página — aunque nadie mire el mapa. Aquí se muestra la fachada (o un marcador con
+ * la dirección) y el iframe se inserta solo al pulsar.
+ *
+ * Es también lo que sostiene la afirmación de la política de privacidad: sin ese
+ * clic, el sitio no habla con Google.
+ */
+interface Props {
+  local: Local;
+}
+
+const { local } = Astro.props;
+const fachada = recortar(local.fachada, 1200, 675);
+const direccionCompleta = [local.calle, local.ciudad, local.provincia]
+  .filter(Boolean)
+  .join(', ');
+---
+
+{
+  local.mapaIncrustado && (
+    <figure
+      id="mapa-local"
+      class="overflow-hidden rounded-lg border border-brand-gray/25"
+      data-mapa={local.mapaIncrustado}
+      data-titulo={`Mapa con la ubicación de EBDesing en ${direccionCompleta}`}
+    >
+      <div class="relative">
+        {fachada ? (
+          <img
+            src={fachada}
+            alt={local.fachada?.alt || `Fachada del local en ${direccionCompleta}`}
+            width="1200"
+            height="675"
+            loading="lazy"
+            decoding="async"
+            class="aspect-video w-full object-cover"
+          />
+        ) : (
+          <div class="flex aspect-video w-full flex-col items-center justify-center gap-2 bg-brand-black px-6 text-center">
+            <span class="font-display text-3xl font-bold text-brand-gold" aria-hidden="true">
+              ◉
+            </span>
+            <p class="font-display font-bold text-brand-white">{direccionCompleta}</p>
+          </div>
+        )}
+
+        <button
+          type="button"
+          data-abrir-mapa
+          class="absolute inset-0 flex items-end justify-center bg-brand-black/40 pb-6 transition-colors hover:bg-brand-black/25 focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-brand-gold"
+        >
+          <span class="rounded-md bg-brand-gold px-5 py-2.5 font-semibold text-brand-black">
+            Ver el mapa
+          </span>
+        </button>
+      </div>
+
+      <figcaption class="flex flex-wrap items-center justify-between gap-2 border-t border-brand-gray/25 px-4 py-3 text-sm">
+        <span class="text-brand-gray">{direccionCompleta}</span>
+        {local.enlaceMapa && (
+          <a
+            href={local.enlaceMapa}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="rounded font-semibold underline decoration-brand-gold underline-offset-4 hover:text-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
+          >
+            Abrir en Google Maps
+          </a>
+        )}
+      </figcaption>
+    </figure>
+  )
+}
+
+<script>
+  const figura = document.getElementById('mapa-local');
+  const boton = figura?.querySelector<HTMLButtonElement>('[data-abrir-mapa]');
+
+  boton?.addEventListener('click', () => {
+    const contenedor = boton.parentElement;
+    if (!contenedor) return;
+
+    const iframe = document.createElement('iframe');
+    iframe.src = figura!.dataset.mapa!;
+    iframe.title = figura!.dataset.titulo!;
+    iframe.loading = 'lazy';
+    iframe.referrerPolicy = 'no-referrer-when-downgrade';
+    iframe.className = 'aspect-video w-full border-0';
+    iframe.setAttribute('allowfullscreen', '');
+
+    // Se reemplaza la fachada entera: dejarla debajo mantendría dos elementos
+    // interactivos superpuestos y el foco saltaría a uno invisible.
+    contenedor.replaceWith(iframe);
+    iframe.focus();
+  });
+</script>

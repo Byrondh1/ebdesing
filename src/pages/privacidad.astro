@@ -1,0 +1,181 @@
+---
+import Base from '../layouts/Base.astro';
+import Migas from '../components/Migas.astro';
+import { obtenerConfiguracion } from '../lib/contenido';
+import { migas } from '../lib/seo';
+
+/**
+ * Política de privacidad — base para la LOPDP de Ecuador.
+ *
+ * ⚠ TEXTO SIN REVISAR POR UN ABOGADO. Lo redactó Claude cubriendo los puntos que la
+ * ley exige nombrar, pero no es asesoría legal y no basta para dar por cumplida la
+ * norma. EBDesing tiene que hacerlo revisar antes de publicar; `npm run marcadores`
+ * lo reporta.
+ *
+ * La razón social y el RUC salen de Sanity. Sin ellos la política no identifica al
+ * responsable, que es justo lo primero que obliga a declarar la ley.
+ */
+const { razonSocial, ruc, emailContacto, direccion } = await obtenerConfiguracion();
+
+const responsable = razonSocial ?? 'EBDesing';
+const actualizada = '18 de septiembre de 2026';
+
+const derechos = [
+  ['Acceso', 'Saber qué datos tuyos tenemos y qué hacemos con ellos.'],
+  ['Rectificación', 'Corregir los que estén mal o incompletos.'],
+  ['Eliminación', 'Pedir que los borremos cuando ya no haga falta conservarlos.'],
+  ['Oposición', 'Pedir que dejemos de tratarlos, salvo que haya una obligación legal de conservarlos.'],
+  ['Portabilidad', 'Recibir en un formato legible los datos que nos diste, o que se los pasemos a quien indiques.'],
+];
+---
+
+<Base
+  titulo="Política de privacidad"
+  descripcion="Cómo trata EBDesing los datos personales que recibe por el formulario de cotización, y cómo ejercer tus derechos según la LOPDP de Ecuador."
+  ogImagen="/og/inicio.png"
+  jsonLd={[migas([{ nombre: 'Política de privacidad', href: '/privacidad/' }], Astro.site)]}
+>
+  <section class="bg-brand-black py-16 text-brand-white sm:py-20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6">
+      <Migas ruta={[{ nombre: 'Política de privacidad', href: '/privacidad/' }]} />
+      <h1 class="mt-6 font-display text-4xl font-bold sm:text-5xl">Política de privacidad</h1>
+      <p class="mt-4 text-lg text-brand-white/80">
+        Qué datos recogemos cuando nos escribes, para qué los usamos y cómo puedes pedirnos que
+        los corrijamos o los borremos.
+      </p>
+      <p class="mt-4 text-sm text-brand-gray-light">Última actualización: {actualizada}</p>
+    </div>
+  </section>
+
+  <section class="py-16 sm:py-20">
+    <div class="mx-auto max-w-3xl space-y-12 px-4 sm:px-6">
+      <div>
+        <h2 class="font-display text-2xl font-bold">Quién responde por tus datos</h2>
+        <p class="mt-4 text-brand-gray">
+          El responsable del tratamiento es <strong class="text-brand-black">{responsable}</strong>
+          {ruc && <> , con RUC <strong class="text-brand-black">{ruc}</strong></>}
+          {direccion && <>, con domicilio en {direccion}</>}. Para cualquier asunto relacionado con
+          tus datos personales, escríbenos a{' '}
+          <a
+            href={`mailto:${emailContacto}`}
+            class="rounded font-semibold underline decoration-brand-gold underline-offset-4 hover:text-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
+          >
+            {emailContacto}
+          </a>.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="font-display text-2xl font-bold">Qué recogemos y para qué</h2>
+        <p class="mt-4 text-brand-gray">
+          Solo tratamos los datos que nos das tú al escribirnos por el formulario de cotización:
+          <strong class="text-brand-black"> nombre, correo electrónico</strong> y, si decides
+          incluirlos, <strong class="text-brand-black">teléfono</strong>, el servicio que te
+          interesa y el mensaje que escribas.
+        </p>
+        <p class="mt-4 text-brand-gray">
+          Los usamos con una única finalidad: <strong class="text-brand-black">responder a tu
+          solicitud y preparar la cotización que pediste</strong>. No los usamos para publicidad,
+          no los cruzamos con otras fuentes y no los vendemos ni los cedemos a nadie con fines
+          comerciales.
+        </p>
+        <p class="mt-4 text-brand-gray">
+          La base legal es tu consentimiento, que nos das al marcar la casilla del formulario antes
+          de enviarlo. Puedes retirarlo cuando quieras escribiéndonos.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="font-display text-2xl font-bold">Cuánto tiempo los guardamos</h2>
+        <p class="mt-4 text-brand-gray">
+          Conservamos tu mensaje mientras dure la conversación y hasta
+          <strong class="text-brand-black"> 24 meses después del último contacto</strong>, por si
+          retomas el proyecto. Pasado ese plazo lo eliminamos. Si nos pides antes que lo borremos,
+          lo hacemos sin esperar a que se cumpla.
+        </p>
+        <p class="mt-4 text-brand-gray">
+          Si llegamos a trabajar juntos, los datos de facturación se conservan el tiempo que exija
+          la normativa tributaria, que es una obligación legal y no depende de tu consentimiento.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="font-display text-2xl font-bold">Quién más los ve</h2>
+        <p class="mt-4 text-brand-gray">
+          No compartimos tus datos con terceros salvo con los proveedores que necesitamos para que
+          el sitio y el correo funcionen. Estos actúan como encargados del tratamiento, solo
+          siguiendo nuestras instrucciones:
+        </p>
+        <ul class="mt-4 space-y-3 text-brand-gray">
+          <li>
+            <strong class="text-brand-black">Resend</strong> — envía a nuestra bandeja el correo con
+            tu solicitud. Sus servidores están en Estados Unidos y la Unión Europea.
+          </li>
+          <li>
+            <strong class="text-brand-black">Cloudflare</strong> — aloja el sitio y procesa el envío
+            del formulario. Opera una red de servidores repartida por varios países.
+          </li>
+        </ul>
+        <div class="mt-6 border-l-4 border-brand-gold bg-brand-black/[0.03] p-5">
+          <h3 class="font-display font-bold">Transferencia internacional</h3>
+          <p class="mt-2 text-brand-gray">
+            Los dos proveedores están <strong class="text-brand-black">fuera de Ecuador</strong>, así
+            que tus datos salen del país. Al enviar el formulario aceptas esa transferencia. Ambos
+            se acogen a marcos de protección reconocidos internacionalmente y solo tratan los datos
+            para prestarnos el servicio descrito.
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="font-display text-2xl font-bold">Tus derechos</h2>
+        <p class="mt-4 text-brand-gray">
+          La Ley Orgánica de Protección de Datos Personales de Ecuador te reconoce estos derechos
+          sobre tus datos:
+        </p>
+        <dl class="mt-6 space-y-4">
+          {
+            derechos.map(([nombre, explicacion]) => (
+              <div class="border-l-4 border-brand-gold pl-5">
+                <dt class="font-display font-bold">{nombre}</dt>
+                <dd class="mt-1 text-brand-gray">{explicacion}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        <p class="mt-6 text-brand-gray">
+          Para ejercer cualquiera de ellos, escríbenos a{' '}
+          <a
+            href={`mailto:${emailContacto}`}
+            class="rounded font-semibold underline decoration-brand-gold underline-offset-4 hover:text-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
+          >
+            {emailContacto}
+          </a>{' '}
+          indicando qué derecho quieres ejercer. Te respondemos en un máximo de quince días. No
+          cobramos nada por atender estas solicitudes.
+        </p>
+        <p class="mt-4 text-brand-gray">
+          Si crees que no hemos atendido bien tu solicitud, puedes presentar un reclamo ante la
+          Superintendencia de Protección de Datos Personales de Ecuador.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="font-display text-2xl font-bold">Cookies</h2>
+        <p class="mt-4 text-brand-gray">
+          Este sitio <strong class="text-brand-black">no usa cookies</strong> de seguimiento ni
+          herramientas de analítica de terceros. Tampoco carga fuentes ni recursos externos: todo
+          se sirve desde nuestro propio dominio.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="font-display text-2xl font-bold">Cambios</h2>
+        <p class="mt-4 text-brand-gray">
+          Si cambiamos esta política, actualizamos la fecha del encabezado. Los cambios aplican
+          desde su publicación.
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>

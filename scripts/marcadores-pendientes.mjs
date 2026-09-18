@@ -48,6 +48,16 @@ if ((await leer('src/lib/seo.ts')).includes("absoluta('/favicon.svg'"))
     'src/lib/seo.ts',
   ]);
 
+// --- privacidad: texto legal sin revisar ---
+if (await existe('src/pages/privacidad.astro'))
+  bloqueantes.push([
+    'Política de privacidad PENDIENTE DE REVISIÓN LEGAL POR EBDESING',
+    'la redactó Claude cubriendo los puntos que nombra la LOPDP, pero NO es asesoría legal ' +
+      'y no basta para dar por cumplida la norma. Revisar antes de publicar, incluido el plazo ' +
+      'de conservación de 24 meses, que es una decisión del negocio',
+    'src/pages/privacidad.astro',
+  ]);
+
 // --- copy escrito por Claude, no por EBDesing ---
 recordatorios.push([
   'Copy sin revisar',
@@ -65,6 +75,23 @@ recordatorios.push([
   'Contenido real',
   'servicios, proyectos y testimonios deben existir en Sanity; el sitio se construye vacío si no hay',
   'Studio → Portafolio / Servicios / Testimonios',
+]);
+recordatorios.push([
+  'Responsable del tratamiento sin datos',
+  'sin `razonSocial` y `ruc` en Sanity, la política no identifica a quién reclamar — que es lo ' +
+    'primero que obliga a declarar la LOPDP',
+  'Studio → Configuración del sitio → Razón social y RUC',
+]);
+recordatorios.push([
+  'Local físico sin rellenar',
+  'con `calle` y `ciudad` el sitio se publica como negocio local (LocalBusiness) y aparece el mapa; ' +
+    'sin ellos se queda en cobertura nacional',
+  'Studio → Configuración del sitio → Local físico',
+]);
+recordatorios.push([
+  'Fachada y mapa',
+  'sin foto de fachada el mapa muestra un marcador con la dirección; sin `mapaIncrustado` no hay mapa',
+  'Studio → Configuración del sitio → Local físico',
 ]);
 recordatorios.push([
   'Preguntas frecuentes vacías',

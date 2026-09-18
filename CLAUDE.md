@@ -115,6 +115,23 @@ salen de ahí. Las imágenes OG no lo imprimen, así que cambiarlo no obliga a r
   FAQ o equipo sin documentos. Restan más de lo que suman.
 - El plazo de respuesta sale de `configuracionSitio.tiempoRespuesta` en Sanity, no del código.
 
+### Legal y local (tanda C)
+- **`/privacidad` es una BASE SIN REVISIÓN LEGAL.** La redactó Claude cubriendo los puntos que
+  nombra la LOPDP de Ecuador; no es asesoría legal. `npm run marcadores` la reporta como
+  **bloqueante** hasta que EBDesing la haga revisar — incluido el plazo de conservación de 24
+  meses, que es una decisión del negocio, no una obligación de la ley.
+- **El consentimiento se valida en el SERVIDOR**, no solo con el `required` del HTML: ese se salta
+  con dos clics en devtools o con un curl, y sin consentimiento probado no hay base legal para
+  tratar el dato. La casilla nunca viene premarcada — una casilla premarcada no es consentimiento.
+- **`LocalBusiness` SUSTITUYE a `Organization`, no se suma.** Es un subtipo: se cambia el `@type`
+  manteniendo el mismo `@id`. Emitir las dos crearía dos entidades compitiendo por el mismo
+  negocio. Se activa solo con `calle` y `ciudad` en Sanity; sin ellas vuelve a `Organization`.
+- **El mapa no habla con Google hasta que alguien lo pide.** Se muestra la fachada (o un marcador
+  con la dirección) y el iframe se inserta al pulsar. Un iframe de Maps incrustado sin más pesa
+  cientos de kilobytes y planta cookies de terceros aunque nadie mire el mapa — y contradiría lo
+  que la propia política de privacidad afirma. Hay una prueba que verifica que no sale ni una
+  petición a Google antes del clic.
+
 ### Cómo fluye el contenido
 ```
 Sanity ──> src/lib/sanity.ts ──┐

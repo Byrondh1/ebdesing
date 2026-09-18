@@ -47,7 +47,7 @@ test.describe('Teclado', () => {
     await page.locator('#nombre').focus();
 
     const alcanzados: string[] = ['nombre'];
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 8; i++) {
       await page.keyboard.press('Tab');
       const id = await page.evaluate(() => document.activeElement?.id ?? '');
       if (id) alcanzados.push(id);
@@ -57,6 +57,7 @@ test.describe('Teclado', () => {
     expect(alcanzados).toContain('telefono');
     expect(alcanzados).toContain('servicioInteres');
     expect(alcanzados).toContain('mensaje');
+    expect(alcanzados, 'la casilla de privacidad debe alcanzarse tabulando').toContain('privacidad');
     expect(alcanzados, 'el honeypot no debe estar en el orden de tabulación').not.toContain('honeypot');
   });
 
@@ -67,6 +68,7 @@ test.describe('Teclado', () => {
     await page.goto('/contacto/');
     await page.fill('#nombre', 'Byron Herrera');
     await page.fill('#email', 'byron@ejemplo.com');
+    await page.check('#privacidad');
     await page.locator('#email').press('Enter');
 
     await page.waitForURL('**/gracias/');

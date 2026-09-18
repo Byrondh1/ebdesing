@@ -13,11 +13,29 @@ export interface Imagen {
   alto?: number;
 }
 
+/**
+ * Local físico. Con `calle` y `ciudad` el sitio pasa a publicarse como negocio local
+ * (LocalBusiness); sin ellos se queda en Organization con cobertura nacional.
+ */
+export interface Local {
+  calle?: string;
+  ciudad?: string;
+  provincia?: string;
+  codigoPostal?: string;
+  fachada?: Imagen;
+  mapaIncrustado?: string;
+  enlaceMapa?: string;
+}
+
 export interface ConfiguracionSitio {
   telefonoWhatsapp: string;
   emailContacto: string;
   /** Promesa de plazo que se muestra junto al formulario y a WhatsApp. */
   tiempoRespuesta?: string;
+  /** Identifican al responsable del tratamiento en la política de privacidad. */
+  razonSocial?: string;
+  ruc?: string;
+  local?: Local;
   direccion: string;
   redesSociales: {
     instagram?: string;

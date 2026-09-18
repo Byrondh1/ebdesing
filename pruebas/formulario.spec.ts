@@ -20,6 +20,9 @@ const rellenarValido = async (page: Page) => {
   await page.fill('#nombre', 'Byron Herrera');
   await page.fill('#email', 'byron@ejemplo.com');
   await page.fill('#mensaje', 'Quiero cotizar el rediseño de mi marca.');
+  // Sin el consentimiento la validación del navegador corta antes de la red, que es
+  // justo lo que se prueba en legal.spec.ts.
+  await page.check('#privacidad');
 };
 
 test.describe('Formulario de cotización', () => {

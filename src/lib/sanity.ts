@@ -110,7 +110,13 @@ export async function obtenerConfiguracion(): Promise<ConfiguracionSitio | null>
     telefonoWhatsapp,
     emailContacto,
     tiempoRespuesta,
+    razonSocial,
+    ruc,
     direccion,
+    "local": local{
+      calle, ciudad, provincia, codigoPostal, mapaIncrustado, enlaceMapa,
+      "fachada": fachada${IMAGEN}
+    },
     redesSociales
   }`);
 }

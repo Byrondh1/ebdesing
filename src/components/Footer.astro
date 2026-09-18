@@ -2,7 +2,13 @@
 import { navPrincipal } from '../lib/nav';
 import { obtenerConfiguracion, enlaceWhatsapp } from '../lib/contenido';
 
-const { emailContacto, direccion, redesSociales, telefonoWhatsapp } = await obtenerConfiguracion();
+const { emailContacto, direccion, redesSociales, telefonoWhatsapp, local } =
+  await obtenerConfiguracion();
+
+const hayLocal = Boolean(local?.calle && local?.ciudad);
+const lineaDireccion = hayLocal
+  ? [local!.calle, local!.ciudad].filter(Boolean).join(', ')
+  : direccion;
 const anio = new Date().getFullYear();
 
 const redes = [
@@ -21,6 +27,13 @@ const redes = [
       <p class="mt-3 max-w-xs text-sm text-brand-gray-light">
         Agencia de diseño y publicidad. Marca, campañas y gran formato en {direccion}.
       </p>
+      {
+        hayLocal && (
+          <address class="mt-3 max-w-xs text-sm text-brand-gray-light not-italic">
+            {lineaDireccion}
+          </address>
+        )
+      }
     </div>
 
     <nav aria-label="Pie de página">
@@ -61,6 +74,15 @@ const redes = [
           </a>
         </li>
       </ul>
+
+      <p class="mt-6 text-sm">
+        <a
+          href="/privacidad/"
+          class="rounded text-brand-gray-light hover:text-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
+        >
+          Política de privacidad
+        </a>
+      </p>
 
       {
         redes.length > 0 && (

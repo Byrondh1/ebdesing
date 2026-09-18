@@ -86,6 +86,32 @@ const error = 'mt-1 text-sm text-red-700';
     <p id="error-mensaje" class={error} data-error-de="mensaje" hidden></p>
   </div>
 
+  <div>
+    <label for="privacidad" class="flex items-start gap-3">
+      {/* Sin `checked`: el consentimiento tiene que ser un acto del visitante.
+          Una casilla premarcada no vale como consentimiento. */}
+      <input
+        type="checkbox"
+        id="privacidad"
+        name="privacidad"
+        required
+        aria-describedby="error-privacidad"
+        class="mt-1 size-5 shrink-0 accent-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
+      />
+      <span class="text-sm text-brand-gray">
+        He leído y acepto la{' '}
+        <a
+          href="/privacidad/"
+          class="rounded font-semibold text-brand-black underline decoration-brand-gold underline-offset-4 hover:text-brand-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
+        >
+          política de privacidad
+        </a>
+        . <span aria-hidden="true">*</span>
+      </span>
+    </label>
+    <p id="error-privacidad" class={error} data-error-de="privacidad" hidden></p>
+  </div>
+
   {/* Trampa para bots. Oculto visualmente y para lectores de pantalla, y fuera del
       orden de tabulación: una persona no puede rellenarlo sin querer.
 
@@ -145,7 +171,10 @@ const error = 'mt-1 text-sm text-red-700';
     };
 
     const mensajeNativo = (control: HTMLInputElement) => {
-      if (control.validity.valueMissing) return 'Este campo es obligatorio.';
+      if (control.validity.valueMissing)
+        return control.type === 'checkbox'
+          ? 'Hay que aceptar la política de privacidad para poder responderte.'
+          : 'Este campo es obligatorio.';
       if (control.validity.typeMismatch) return 'El correo no tiene un formato válido.';
       if (control.validity.tooShort) return 'Todavía es muy corto.';
       return 'Revisa este campo.';
@@ -161,7 +190,9 @@ const error = 'mt-1 text-sm text-red-700';
 
       for (const control of form.querySelectorAll<HTMLInputElement>('input[required], input[type="email"]')) {
         if (control.name === 'honeypot') continue;
-        if (!control.value && !control.required) continue;
+        // Un checkbox no tiene `value` útil: se juzga por checkValidity(), que ya
+        // devuelve false si es obligatorio y está sin marcar.
+        if (control.type !== 'checkbox' && !control.value && !control.required) continue;
         if (!control.checkValidity()) {
           mostrarError(control.name, mensajeNativo(control));
           primerFallo ??= control;
