@@ -13,9 +13,6 @@ export const GET: APIRoute = ({ site }) => {
     'User-agent: *',
     'Allow: /',
     '',
-    '# Página interna de desarrollo; se borra antes del deploy, pero por si acaso.',
-    'Disallow: /components-preview',
-    '',
     `Sitemap: ${new URL('sitemap-index.xml', site).href}`,
     '',
   ].join('\n');

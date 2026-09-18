@@ -279,7 +279,9 @@ que no llega ni al 3:1 de texto grande. Y hay **dos grises**:
 | `brand-gray` `#4A4A4A` | claro | 8.86:1 |
 | `brand-gray-light` `#9A9A9A` | oscuro | 7.04:1 |
 
-Intercambiarlos rompe AA y el escaneo de axe lo detecta. `/components-preview` lo muestra.
+Intercambiarlos rompe AA y el escaneo de axe lo detecta. La página `/components-preview` que
+mostraba estos casos lado a lado **se borró antes del deploy**, como pedía el paso 3 del BUILD
+ORDER; la regla queda aquí y la hacen cumplir las pruebas de accesibilidad.
 
 **Nombre accesible = texto visible.** No pongas un `aria-label` que sustituya el texto que se ve:
 quien usa control por voz dice lo que lee. El logo lo hacía ("3BDesigns" a la vista, "EBDesing —

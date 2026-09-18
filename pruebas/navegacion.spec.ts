@@ -19,6 +19,19 @@ test.describe('Navegación', () => {
     await expect(page.getByRole('heading', { level: 1 })).toContainText('no existe');
   });
 
+  test('la página de desarrollo ya no existe ni se enlaza', async ({ page, request }) => {
+    // Era temporal (paso 3 del BUILD ORDER) y se borró antes del deploy. Esta prueba
+    // impide que vuelva a colarse al sitio publicado sin que nadie se dé cuenta.
+    const respuesta = await page.goto('/components-preview/');
+    expect(respuesta?.status()).toBe(404);
+
+    const xml = await (await request.get('/sitemap-0.xml')).text();
+    expect(xml).not.toContain('components-preview');
+
+    await page.goto('/');
+    expect(await page.locator('a[href*="components-preview"]').count()).toBe(0);
+  });
+
   test('cada enlace del menú lleva a su página', async ({ page }) => {
     await page.goto('/');
     for (const ruta of rutasDelNav) {

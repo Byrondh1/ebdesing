@@ -32,14 +32,6 @@ if (!sitio || sitio === 'https://ebdesing.com')
     'astro.config.mjs',
   ]);
 
-// --- página de desarrollo ---
-if (await existe('src/pages/components-preview.astro'))
-  bloqueantes.push([
-    'Página de desarrollo publicada',
-    '/components-preview sigue existiendo y se construye con el sitio',
-    'bórrala: rm src/pages/components-preview.astro',
-  ]);
-
 // --- logo del JSON-LD ---
 if ((await leer('src/lib/seo.ts')).includes("absoluta('/favicon.svg'"))
   bloqueantes.push([
