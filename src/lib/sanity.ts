@@ -2,6 +2,8 @@ import { createClient } from '@sanity/client';
 import { leerEnv } from './env';
 import type {
   ConfiguracionSitio,
+  MiembroEquipo,
+  PreguntaFrecuente,
   Proyecto,
   Servicio,
   Testimonio,
@@ -42,7 +44,10 @@ const CAMPOS_PROYECTO = `{
   cliente,
   categoria,
   descripcion,
+  reto,
+  solucion,
   resultado,
+  "servicios": servicios[]->{ titulo, "slug": slug.current },
   "destacado": coalesce(destacado, false),
   "orden": coalesce(orden, 999),
   "imagenPrincipal": imagenPrincipal${IMAGEN},
@@ -78,7 +83,25 @@ export async function obtenerTestimonios(): Promise<Testimonio[]> {
     nombreCliente,
     empresa,
     cita,
+    perfilGoogle,
     "foto": foto${IMAGEN}
+  }`);
+}
+
+export async function obtenerPreguntas(): Promise<PreguntaFrecuente[]> {
+  return clienteSanity.fetch(`*[_type == "preguntaFrecuente"] | order(coalesce(orden, 999) asc) {
+    pregunta,
+    respuesta,
+    "orden": coalesce(orden, 999)
+  }`);
+}
+
+export async function obtenerEquipo(): Promise<MiembroEquipo[]> {
+  return clienteSanity.fetch(`*[_type == "miembroEquipo"] | order(coalesce(orden, 999) asc) {
+    nombre,
+    cargo,
+    "foto": foto${IMAGEN},
+    "orden": coalesce(orden, 999)
   }`);
 }
 

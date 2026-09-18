@@ -39,6 +39,8 @@ export default defineConfig({
             S.documentTypeListItem('proyecto').title('Portafolio'),
             S.documentTypeListItem('servicio').title('Servicios'),
             S.documentTypeListItem('testimonio').title('Testimonios'),
+            S.documentTypeListItem('preguntaFrecuente').title('Preguntas frecuentes'),
+            S.documentTypeListItem('miembroEquipo').title('Equipo'),
           ]),
     }),
     visionTool({ defaultApiVersion: '2026-09-17' }),

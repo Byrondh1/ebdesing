@@ -7,6 +7,8 @@
 import { leerEnv } from './env';
 import type {
   ConfiguracionSitio,
+  MiembroEquipo,
+  PreguntaFrecuente,
   Proyecto,
   Servicio,
   Testimonio,
@@ -78,6 +80,16 @@ const _obtenerTestimonios = async (): Promise<Testimonio[]> => {
   return (await import('./sanity')).obtenerTestimonios();
 };
 
+const _obtenerPreguntas = async (): Promise<PreguntaFrecuente[]> => {
+  if (LOCAL) return (await import('./contenido-temporal')).preguntasFrecuentes;
+  return (await import('./sanity')).obtenerPreguntas();
+};
+
+const _obtenerEquipo = async (): Promise<MiembroEquipo[]> => {
+  if (LOCAL) return (await import('./contenido-temporal')).equipo;
+  return (await import('./sanity')).obtenerEquipo();
+};
+
 const _obtenerConfiguracion = async (): Promise<ConfiguracionSitio> => {
   if (LOCAL) return (await import('./contenido-temporal')).configuracionSitio;
 
@@ -94,10 +106,22 @@ const _obtenerConfiguracion = async (): Promise<ConfiguracionSitio> => {
 export const obtenerServicios = unaVez(_obtenerServicios);
 export const obtenerProyectos = unaVez(_obtenerProyectos);
 export const obtenerTestimonios = unaVez(_obtenerTestimonios);
+export const obtenerPreguntas = unaVez(_obtenerPreguntas);
+export const obtenerEquipo = unaVez(_obtenerEquipo);
 export const obtenerConfiguracion = unaVez(_obtenerConfiguracion);
 
 export async function obtenerProyectosDestacados(): Promise<Proyecto[]> {
   return (await obtenerProyectos()).filter((p) => p.destacado);
+}
+
+/**
+ * Proyectos en los que intervino un servicio. Se resuelve desde el lado del proyecto
+ * porque es donde vive la referencia: así el editor la mantiene en un solo sitio y no
+ * tiene que acordarse de enlazar en las dos direcciones.
+ */
+export async function obtenerProyectosDeServicio(slugServicio: string): Promise<Proyecto[]> {
+  const proyectos = await obtenerProyectos();
+  return proyectos.filter((p) => p.servicios?.some((s) => s.slug === slugServicio));
 }
 
 /** Link de WhatsApp con mensaje prellenado — §5 del blueprint, cero backend. */

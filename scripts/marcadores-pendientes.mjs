@@ -67,6 +67,26 @@ recordatorios.push([
   'Studio → Portafolio / Servicios / Testimonios',
 ]);
 recordatorios.push([
+  'Preguntas frecuentes vacías',
+  'sin documentos en `preguntaFrecuente` no hay sección FAQ ni datos estructurados FAQPage',
+  'Studio → Preguntas frecuentes',
+]);
+recordatorios.push([
+  'Equipo vacío',
+  'sin documentos en `miembroEquipo` la sección de equipo no aparece en Sobre nosotros',
+  'Studio → Equipo',
+]);
+recordatorios.push([
+  'Casos de éxito a medias',
+  '`reto` y `solucion` son opcionales: un proyecto sin ellos se ve como ficha, no como caso de éxito',
+  'Studio → Portafolio → cada proyecto',
+]);
+recordatorios.push([
+  'Proyectos sin servicios enlazados',
+  'sin el campo `servicios` no hay enlaces internos entre servicio y proyecto, que es lo que busca el SEO',
+  'Studio → Portafolio → cada proyecto → Servicios que intervinieron',
+]);
+recordatorios.push([
   'Colaboradora de EBDesing',
   'falta invitarla para que pueda editar',
   'sanity.io → Project → Members',

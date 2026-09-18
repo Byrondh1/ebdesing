@@ -80,19 +80,47 @@ export const proyecto = defineType({
     }),
     defineField({
       name: 'descripcion',
-      title: 'Descripción',
-      description: 'Qué se pidió y qué se hizo. Dos o tres frases.',
+      title: 'Resumen',
+      description:
+        'Dos o tres frases que expliquen el proyecto entero. Es lo que se ve en el listado y lo que Google muestra como descripción en los resultados, así que debe entenderse suelto.',
       type: 'text',
       rows: 4,
       validation: (regla) => regla.required().min(40),
     }),
+
+    // Los tres campos del caso de éxito. Van juntos y en este orden porque así se
+    // lee la historia: qué pasaba, qué hicimos, en qué quedó.
+    defineField({
+      name: 'reto',
+      title: 'El reto',
+      description: 'Con qué problema llegó el cliente. Sin adornos: qué no le estaba funcionando.',
+      type: 'text',
+      rows: 3,
+    }),
+    defineField({
+      name: 'solucion',
+      title: 'La solución',
+      description: 'Qué hicimos y por qué ese camino y no otro.',
+      type: 'text',
+      rows: 3,
+    }),
     defineField({
       name: 'resultado',
-      title: 'Resultado',
+      title: 'El resultado',
       description: 'El "después": qué quedó entregado o qué consiguió el cliente.',
       type: 'text',
       rows: 2,
       validation: (regla) => regla.required(),
+    }),
+
+    defineField({
+      name: 'servicios',
+      title: 'Servicios que intervinieron',
+      description:
+        'Enlaza este proyecto con los servicios que lo hicieron posible. Sirve para que desde cada servicio se llegue a ejemplos reales, y al revés.',
+      type: 'array',
+      of: [{ type: 'reference', to: [{ type: 'servicio' }] }],
+      validation: (regla) => regla.unique(),
     }),
     defineField({
       name: 'destacado',

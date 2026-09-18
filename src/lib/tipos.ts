@@ -35,6 +35,12 @@ export interface Servicio {
 
 export type CategoriaProyecto = 'diseño' | 'publicidad' | 'branding';
 
+/** Servicio referenciado desde un proyecto: solo lo necesario para enlazarlo. */
+export interface ServicioEnlazado {
+  titulo: string;
+  slug: string;
+}
+
 export interface Proyecto {
   titulo: string;
   slug: string;
@@ -42,8 +48,14 @@ export interface Proyecto {
   categoria: CategoriaProyecto;
   imagenPrincipal?: Imagen;
   galeria?: Imagen[];
+  /** Resumen. Es también la base de la meta description de su página. */
   descripcion: string;
+  /** Los tres tiempos del caso de éxito. `reto` y `solucion` son opcionales. */
+  reto?: string;
+  solucion?: string;
   resultado: string;
+  /** Servicios que intervinieron, para enlazar en las dos direcciones. */
+  servicios?: ServicioEnlazado[];
   destacado: boolean;
   orden: number;
 }
@@ -53,4 +65,19 @@ export interface Testimonio {
   empresa: string;
   cita: string;
   foto?: Imagen;
+  /** Enlace a la reseña pública, si el testimonio salió de una. */
+  perfilGoogle?: string;
+}
+
+export interface PreguntaFrecuente {
+  pregunta: string;
+  respuesta: string;
+  orden: number;
+}
+
+export interface MiembroEquipo {
+  nombre: string;
+  cargo: string;
+  foto: Imagen;
+  orden: number;
 }

@@ -82,6 +82,20 @@ Pasos 1-13 del BUILD ORDER completos. Falta el **14** (deploy). Ver `docs/despli
 solo sitio, `DOMINIO` en `astro.config.mjs`; canonical, sitemap, robots.txt, llms.txt y JSON-LD
 salen de ahí. Las imágenes OG no lo imprimen, así que cambiarlo no obliga a regenerarlas.
 
+### Tipos de contenido en Sanity
+`proyecto`, `servicio`, `testimonio`, `preguntaFrecuente`, `miembroEquipo` y el singleton
+`configuracionSitio`.
+
+- **Un proyecto es un caso de éxito**: `descripcion` (resumen, y base de su meta description),
+  luego `reto` → `solucion` → `resultado`. Los dos del medio son opcionales; sin ellos el proyecto
+  se ve como ficha, no como caso.
+- **La relación servicio↔proyecto vive en el proyecto** (`servicios[]`, referencias). El editor la
+  mantiene en un solo sitio; `obtenerProyectosDeServicio()` la resuelve en la otra dirección.
+- **El alt de `testimonio.foto` es obligatorio solo si hay foto.** Un `required()` a secas marcaría
+  error en todos los testimonios sin foto, que son válidos.
+- **No hay tipo `pagina`.** Títulos y descripciones de las 5 páginas fijas viven en el código
+  (decisión de Byron); la auditoría garantiza que sean únicos. Las de proyecto salen de sus campos.
+
 ### Cómo fluye el contenido
 ```
 Sanity ──> src/lib/sanity.ts ──┐

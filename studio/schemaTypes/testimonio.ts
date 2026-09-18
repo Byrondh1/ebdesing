@@ -32,8 +32,28 @@ export const testimonio = defineType({
       type: 'image',
       options: { hotspot: true },
       fields: [
-        defineField({ name: 'alt', title: 'Texto alternativo', type: 'string' }),
+        defineField({
+          name: 'alt',
+          title: 'Texto alternativo',
+          description: 'Describe la foto para quien no puede verla.',
+          type: 'string',
+          // Obligatorio SOLO si hay foto. Un required() a secas marcaría error en
+          // todos los testimonios sin foto, que son válidos.
+          validation: (regla) =>
+            regla.custom((alt, contexto) => {
+              const imagen = contexto.parent as { asset?: unknown } | undefined;
+              if (!imagen?.asset) return true;
+              return alt ? true : 'Si subes una foto, describe qué se ve en ella.';
+            }),
+        }),
       ],
+    }),
+    defineField({
+      name: 'perfilGoogle',
+      title: 'Enlace a la reseña en Google',
+      description:
+        'Opcional. Si el testimonio salió de una reseña pública, pega aquí su enlace para que quien quiera pueda comprobarla.',
+      type: 'url',
     }),
   ],
   preview: {
